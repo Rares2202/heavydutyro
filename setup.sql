@@ -51,6 +51,40 @@ CREATE TABLE IF NOT EXISTS body_fat_estimates (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
+-- ── DATE DEMO ──
+INSERT INTO users (email, password_hash, first_name, last_name, experience, newsletter)
+VALUES (
+    'demo@heavyduty.ro',
+    '$2y$12$Gv0tAZQFPQXjjbv0oH3uUuatWNUWPfCEmuhwvLqGIVT81TlPBy3um',
+    'Andrei',
+    'Popescu',
+    'intermediar',
+    1
+)
+ON DUPLICATE KEY UPDATE
+    id = LAST_INSERT_ID(id),
+    password_hash = VALUES(password_hash),
+    first_name = VALUES(first_name),
+    last_name = VALUES(last_name),
+    experience = VALUES(experience),
+    newsletter = VALUES(newsletter);
+
+SET @demo_user_id = LAST_INSERT_ID();
+
+DELETE FROM workout_journal WHERE user_id = @demo_user_id;
+DELETE FROM body_fat_estimates WHERE user_id = @demo_user_id;
+
+INSERT INTO body_fat_estimates (user_id, percentage, category, gender, age, weight, height, created_at) VALUES
+(@demo_user_id, 18.4, 'fitness', 'male', 31, 86.2, 181.0, '2026-05-05 08:30:00'),
+(@demo_user_id, 17.6, 'fitness', 'male', 31, 85.4, 181.0, '2026-05-12 08:30:00'),
+(@demo_user_id, 16.9, 'athletic', 'male', 31, 84.7, 181.0, '2026-05-19 08:30:00');
+
+INSERT INTO workout_journal (user_id, date, type, exercises, duration, intensity, notes, created_at) VALUES
+(@demo_user_id, '2026-05-06', 'Piept + Spate', 'Împins la piept, fluturări, ramat cu bara, tracțiuni', 62, 8, 'Sesiune Heavy Duty cu progres la ramat.', '2026-05-06 19:15:00'),
+(@demo_user_id, '2026-05-10', 'Picioare', 'Genuflexiuni, presă, îndreptări românești, ridicări pe vârfuri', 58, 9, 'Volum minim, intensitate maximă.', '2026-05-10 18:40:00'),
+(@demo_user_id, '2026-05-15', 'Umeri + Brațe', 'Presă militară, ridicări laterale, flexii biceps, extensii triceps', 49, 8, 'Formă bună și recuperare rapidă.', '2026-05-15 19:05:00'),
+(@demo_user_id, '2026-05-22', 'Spate + Abdomen', 'Tracțiuni, ramat ganteră, hiperextensii, crunch-uri controlate', 55, 7, 'Focus pe contracție și execuție strictă.', '2026-05-22 18:55:00');
+
 -- ── UTILIZATOR TEST (parolă: Test1234!) ──
 -- Șterge linia de mai jos după ce îți creezi contul propriu
 -- INSERT INTO users (email, password_hash, first_name, last_name, experience)

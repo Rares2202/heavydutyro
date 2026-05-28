@@ -4,7 +4,6 @@
 
 ```
 C:\wamp64\www\heavydutyro\
-├── index.html
 ├── login.html
 ├── dashboard.html
 ├── workout-planner.html
