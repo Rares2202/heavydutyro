@@ -76,9 +76,6 @@ function handleRegister(): void {
 
     $userId = (int)$db->lastInsertId();
 
-    // Creare rând gol în user_stats
-    $db->prepare('INSERT INTO user_stats (user_id) VALUES (?)')->execute([$userId]);
-
     $_SESSION['user_id']    = $userId;
     $_SESSION['user_email'] = $email;
 

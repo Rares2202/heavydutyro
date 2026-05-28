@@ -35,9 +35,9 @@ function getProfile(int $userId): void {
     $stmt->execute([$userId]);
     $user = $stmt->fetch();
  
-    $stmt = $db->prepare('SELECT weight, bodyfat, recovery_days, target_weight FROM user_stats WHERE user_id = ?');
+    $stmt = $db->prepare('SELECT percentage, weight FROM body_fat_estimates WHERE user_id = ? ORDER BY created_at DESC LIMIT 1');
     $stmt->execute([$userId]);
-    $stats = $stmt->fetch() ?: [];
+    $latestBodyFat = $stmt->fetch() ?: [];
  
     // Număr antrenamente totale
     $stmt = $db->prepare('SELECT COUNT(*) as total FROM workout_journal WHERE user_id = ?');
@@ -53,10 +53,10 @@ function getProfile(int $userId): void {
             'newsletter' => (bool)$user['newsletter'],
         ],
         'stats'         => [
-            'weight'       => $stats['weight'] ? (float)$stats['weight'] : null,
-            'bodyfat'      => $stats['bodyfat'] ? (float)$stats['bodyfat'] : null,
-            'recoveryDays' => (int)($stats['recovery_days'] ?? 2),
-            'targetWeight' => $stats['target_weight'] ? (float)$stats['target_weight'] : null,
+            'weight'       => isset($latestBodyFat['weight']) && $latestBodyFat['weight'] !== null ? (float)$latestBodyFat['weight'] : null,
+            'bodyfat'      => isset($latestBodyFat['percentage']) && $latestBodyFat['percentage'] !== null ? (float)$latestBodyFat['percentage'] : null,
+            'recoveryDays' => 2,
+            'targetWeight' => null,
         ],
         'totalWorkouts' => $totalWorkouts,
     ]]);
@@ -86,23 +86,32 @@ function updateStats(int $userId): void {
     $data         = getJsonBody();
     $weight       = isset($data['weight'])       ? (float)$data['weight']       : null;
     $bodyfat      = isset($data['bodyfat'])      ? (float)$data['bodyfat']      : null;
-    $recoveryDays = isset($data['recoveryDays']) ? (int)$data['recoveryDays']   : 2;
-    $targetWeight = isset($data['targetWeight']) ? (float)$data['targetWeight'] : null;
  
     $db   = getDB();
-    $stmt = $db->prepare('
-        INSERT INTO user_stats (user_id, weight, bodyfat, recovery_days, target_weight)
-        VALUES (?,?,?,?,?)
-        ON DUPLICATE KEY UPDATE
-            weight        = VALUES(weight),
-            bodyfat       = VALUES(bodyfat),
-            recovery_days = VALUES(recovery_days),
-            target_weight = VALUES(target_weight),
-            updated_at    = NOW()
-    ');
-    $stmt->execute([$userId, $weight, $bodyfat, $recoveryDays, $targetWeight]);
- 
-    jsonResponse(['success' => true, 'message' => 'Statistici actualizate']);
+
+    if ($weight === null && $bodyfat === null) {
+        jsonResponse(['success' => true, 'message' => 'Nicio schimbare de greutate/bodyfat']);
+    }
+
+    $stmt = $db->prepare('SELECT category, gender, age, weight, height, percentage FROM body_fat_estimates WHERE user_id = ? ORDER BY created_at DESC LIMIT 1');
+    $stmt->execute([$userId]);
+    $last = $stmt->fetch() ?: [];
+
+    $percentage = $bodyfat ?? (isset($last['percentage']) ? (float)$last['percentage'] : null);
+    $resolvedWeight = $weight ?? (isset($last['weight']) ? (float)$last['weight'] : null);
+
+    $stmt = $db->prepare('INSERT INTO body_fat_estimates (user_id, percentage, category, gender, age, weight, height) VALUES (?,?,?,?,?,?,?)');
+    $stmt->execute([
+        $userId,
+        $percentage,
+        $last['category'] ?? null,
+        $last['gender'] ?? null,
+        isset($last['age']) && $last['age'] !== null ? (int)$last['age'] : null,
+        $resolvedWeight,
+        isset($last['height']) && $last['height'] !== null ? (float)$last['height'] : null,
+    ]);
+
+    jsonResponse(['success' => true, 'message' => 'Greutate/bodyfat actualizate']);
 }
  
 // ── SCHIMBĂ PAROLA ─────────────────────────────────

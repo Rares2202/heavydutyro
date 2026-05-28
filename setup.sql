@@ -22,31 +22,6 @@ CREATE TABLE IF NOT EXISTS users (
     updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
--- ── STATISTICI UTILIZATOR (greutate, bodyfat curent) ──
-CREATE TABLE IF NOT EXISTS user_stats (
-    id              INT AUTO_INCREMENT PRIMARY KEY,
-    user_id         INT NOT NULL UNIQUE,
-    weight          DECIMAL(5,2) DEFAULT NULL,
-    bodyfat         DECIMAL(4,1) DEFAULT NULL,
-    recovery_days   INT DEFAULT 2,
-    target_weight   DECIMAL(5,2) DEFAULT NULL,
-    updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-) ENGINE=InnoDB;
-
--- ── MĂSURĂTORI PROGRES ──
-CREATE TABLE IF NOT EXISTS measurements (
-    id          INT AUTO_INCREMENT PRIMARY KEY,
-    user_id     INT NOT NULL,
-    date        DATE NOT NULL,
-    weight      DECIMAL(5,2) DEFAULT NULL,
-    bodyfat     DECIMAL(4,1) DEFAULT NULL,
-    muscle      DECIMAL(5,2) DEFAULT NULL,
-    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    INDEX idx_user_date (user_id, date)
-) ENGINE=InnoDB;
-
 -- ── JURNAL ANTRENAMENTE ──
 CREATE TABLE IF NOT EXISTS workout_journal (
     id          INT AUTO_INCREMENT PRIMARY KEY,
@@ -74,21 +49,6 @@ CREATE TABLE IF NOT EXISTS body_fat_estimates (
     height      DECIMAL(5,2) DEFAULT NULL,
     created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-) ENGINE=InnoDB;
-
--- ── JURNAL NUTRIȚIE ──
-CREATE TABLE IF NOT EXISTS nutrition_logs (
-    id          INT AUTO_INCREMENT PRIMARY KEY,
-    user_id     INT NOT NULL,
-    date        DATE NOT NULL,
-    calories    INT DEFAULT 0,
-    protein     DECIMAL(6,1) DEFAULT 0,
-    carbs       DECIMAL(6,1) DEFAULT 0,
-    fat         DECIMAL(6,1) DEFAULT 0,
-    notes       TEXT,
-    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    UNIQUE KEY uq_user_date (user_id, date)
 ) ENGINE=InnoDB;
 
 -- ── UTILIZATOR TEST (parolă: Test1234!) ──

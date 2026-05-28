@@ -29,9 +29,6 @@
     </a>
 
     <span class="sidebar-section-label">Progres</span>
-    <a href="grafic-progres.html" class="sidebar-link">
-        Grafic Progres
-    </a>
     <a href="jurnal-antrenament.html" class="sidebar-link">
         Jurnal
     </a>
@@ -117,6 +114,7 @@
             </div>
             <button type="submit" class="btn btn-primary">Calculează</button>
         </form>
+        <p id="prefill-status" style="margin-top: 0.8rem; color: var(--chalk-dim); font-size: 0.9rem;">Formularul se poate completa automat din ultima estimare de body fat.</p>
 
         <div id="calorie-result" style="margin-top: 2rem; display: none;">
             <div style="background: var(--steel); border-left: 3px solid var(--rust); padding: 1.5rem; border-radius: 0;">
@@ -291,6 +289,93 @@ async function logout() {
     window.location.href = 'login.html';
 }
 
+function normalizeGender(value) {
+    const v = String(value || '').toLowerCase().trim();
+    if (v === 'male' || v === 'm' || v === 'barbat' || v === 'bărbat') return 'male';
+    if (v === 'female' || v === 'f' || v === 'femeie') return 'female';
+    return '';
+}
+
+function calculateCalories(event) {
+    event.preventDefault();
+
+    const weight = parseFloat(document.getElementById('cal-weight').value);
+    const height = parseFloat(document.getElementById('cal-height').value);
+    const age = parseInt(document.getElementById('cal-age').value, 10);
+    const gender = document.getElementById('cal-gender').value;
+    const activity = parseFloat(document.getElementById('cal-activity').value);
+    const goal = document.getElementById('cal-goal').value;
+
+    if (!weight || !height || !age || !gender || !activity || !goal) return;
+
+    const bmr = gender === 'male'
+        ? (10 * weight) + (6.25 * height) - (5 * age) + 5
+        : (10 * weight) + (6.25 * height) - (5 * age) - 161;
+
+    const maintenanceTdee = bmr * activity;
+    const goalMultiplier = goal === 'loss' ? 0.9 : (goal === 'gain' ? 1.1 : 1);
+    const targetCalories = maintenanceTdee * goalMultiplier;
+
+    const proteinPerKg = goal === 'loss' ? 2.2 : 2.0;
+    const proteinGrams = weight * proteinPerKg;
+
+    let macroProtein = 30;
+    let macroFat = 30;
+    let macroCarbs = 40;
+    if (goal === 'loss') {
+        macroProtein = 35;
+        macroFat = 30;
+        macroCarbs = 35;
+    } else if (goal === 'gain') {
+        macroProtein = 30;
+        macroFat = 25;
+        macroCarbs = 45;
+    }
+
+    document.getElementById('bmr-value').textContent = Math.round(bmr).toLocaleString('ro-RO') + ' kcal';
+    document.getElementById('tdee-value').textContent = Math.round(targetCalories).toLocaleString('ro-RO') + ' kcal';
+    document.getElementById('protein-value').textContent = Math.round(proteinGrams).toLocaleString('ro-RO');
+    document.getElementById('macro-protein').textContent = String(macroProtein);
+    document.getElementById('macro-fat').textContent = String(macroFat);
+    document.getElementById('macro-carbs').textContent = String(macroCarbs);
+    document.getElementById('calorie-result').style.display = 'block';
+}
+
+async function prefillNutritionFromBodyFatEstimate() {
+    const statusEl = document.getElementById('prefill-status');
+    if (!statusEl) return;
+
+    try {
+        const res = await fetch('api/user.php?action=bodyfat');
+        const data = await res.json();
+
+        if (!data.success || !data.data) {
+            statusEl.textContent = 'Nu exista inca estimari body fat. Completeaza manual calculatorul.';
+            return;
+        }
+
+        const estimate = data.data;
+        if (estimate.weight !== null && estimate.weight !== undefined) {
+            document.getElementById('cal-weight').value = estimate.weight;
+        }
+        if (estimate.height !== null && estimate.height !== undefined) {
+            document.getElementById('cal-height').value = estimate.height;
+        }
+        if (estimate.age !== null && estimate.age !== undefined) {
+            document.getElementById('cal-age').value = estimate.age;
+        }
+
+        const normalizedGender = normalizeGender(estimate.gender);
+        if (normalizedGender) {
+            document.getElementById('cal-gender').value = normalizedGender;
+        }
+
+        statusEl.textContent = 'Formular precompletat din ultima inregistrare body fat.';
+    } catch (_) {
+        statusEl.textContent = 'Nu am putut prelua datele body fat. Poti folosi calculatorul manual.';
+    }
+}
+
 (async function () {
     try {
         const res  = await fetch('api/auth.php?action=me');
@@ -299,6 +384,7 @@ async function logout() {
         const name = data.user.firstName?.trim() || data.user.email.split('@')[0];
         const el = document.getElementById('user-name');
         if (el) el.textContent = name;
+        await prefillNutritionFromBodyFatEstimate();
     } catch (_) { window.location.href = 'login.html'; }
 })();
 </script>

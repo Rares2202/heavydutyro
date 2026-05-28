@@ -61,10 +61,6 @@ function addMeasurement(int $userId): void {
     $stmt = $db->prepare('INSERT INTO measurements (user_id, date, weight, bodyfat, muscle) VALUES (?,?,?,?,?)');
     $stmt->execute([$userId, $date, $weight, $bf, $muscle]);
 
-    // Actualizează și user_stats cu ultima greutate
-    $db->prepare('INSERT INTO user_stats (user_id, weight, bodyfat) VALUES (?,?,?) ON DUPLICATE KEY UPDATE weight=VALUES(weight), bodyfat=VALUES(bodyfat)')
-       ->execute([$userId, $weight, $bf]);
-
     jsonResponse(['success' => true, 'id' => (int)$db->lastInsertId(), 'message' => 'Măsurătoare salvată']);
 }
 

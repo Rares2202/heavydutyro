@@ -9,7 +9,6 @@ C:\wamp64\www\heavydutyro\
 ├── dashboard.html
 ├── workout-planner.html
 ├── body-fat-estimator.html
-├── grafic-progres.html
 ├── jurnal-antrenament.html
 ├── nutritie.html
 ├── setari.html
@@ -19,7 +18,6 @@ C:\wamp64\www\heavydutyro\
 │       └── style.css
 ├── api/
 │   ├── auth.php
-│   ├── measurements.php
 │   ├── workouts.php
 │   ├── nutrition.php
 │   └── user.php
@@ -69,9 +67,6 @@ Deschide: **http://localhost/heavydutyro/**
 | POST | `/api/auth.php?action=register` | Înregistrare |
 | POST | `/api/auth.php?action=logout` | Deconectare |
 | GET | `/api/auth.php?action=me` | Utilizator curent |
-| GET | `/api/measurements.php` | Lista măsurători |
-| POST | `/api/measurements.php` | Adaugă măsurătoare |
-| DELETE | `/api/measurements.php?id=X` | Șterge măsurătoare |
 | GET | `/api/workouts.php` | Lista antrenamente |
 | POST | `/api/workouts.php` | Adaugă antrenament |
 | DELETE | `/api/workouts.php?id=X` | Șterge antrenament |
