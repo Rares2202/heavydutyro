@@ -3,11 +3,11 @@
 -- Rulează în phpMyAdmin sau MySQL CLI
 -- =====================================================
 
-CREATE DATABASE IF NOT EXISTS heavydutyro
+CREATE DATABASE IF NOT EXISTS heavyduty_db
     CHARACTER SET utf8mb4
     COLLATE utf8mb4_unicode_ci;
 
-USE heavydutyro;
+USE heavyduty_db;
 
 -- ── UTILIZATORI ──
 CREATE TABLE IF NOT EXISTS users (

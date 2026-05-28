@@ -8,7 +8,7 @@
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'heavyduty_db');
 define('DB_USER', 'root');
-define('DB_PASS', '');          // WAMP default = fără parolă
+define('DB_PASS', 'boss');          // WAMP default = fără parolă
 define('DB_CHARSET', 'utf8mb4');
 
 function getDB(): PDO {

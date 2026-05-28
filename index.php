@@ -1,3 +1,3 @@
 <?php
-header('Location: /heavydutyro/login.html', true, 302);
+header('Location: /heavydutyro/login.html', true, 301);
 exit;
