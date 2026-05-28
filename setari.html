@@ -52,7 +52,7 @@
     <header class="page-header">
         <p class="page-tag">Administrare Cont</p>
         <h1>Setări Utilizator</h1>
-        <p class="page-subtitle">Profilul, securitatea și preferințele tale</p>
+        <p class="page-subtitle">Profilul și securitatea contului tău</p>
     </header>
 
     <div id="message-container"></div>
@@ -75,33 +75,7 @@
             <div class="field-row">
                 <div class="field-group">
                     <label for="profile-email">Email</label>
-                    <input type="email" id="profile-email" name="profile-email" required>
-                </div>
-                <div class="field-group">
-                    <label for="profile-experience">Experiență Training</label>
-                    <select id="profile-experience" name="profile-experience" required>
-                        <option value="">-- Alege --</option>
-                        <option value="beginner">Începător (0-1 an)</option>
-                        <option value="intermediate">Intermediar (1-3 ani)</option>
-                        <option value="advanced">Avansat (3-5 ani)</option>
-                        <option value="elite">Elite (5+ ani)</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="field-row">
-                <div class="field-group">
-                    <label for="profile-age">Vârstă</label>
-                    <input type="number" id="profile-age" name="profile-age" min="16" max="120">
-                </div>
-                <div class="field-group">
-                    <label for="profile-gender">Sex</label>
-                    <select id="profile-gender" name="profile-gender">
-                        <option value="">-- Alege --</option>
-                        <option value="male">Bărbat</option>
-                        <option value="female">Femeie</option>
-                        <option value="other">Alt</option>
-                    </select>
+                    <input type="email" id="profile-email" name="profile-email" readonly>
                 </div>
             </div>
 
@@ -133,44 +107,6 @@
         </form>
     </div>
 
-    <!-- SECȚIUNEA PREFERINȚE -->
-    <div class="card">
-        <p class="card-title"> Preferințe Aplicație</p>
-        <form id="preferences-form" onsubmit="updatePreferences(event)">
-            <div class="field-group">
-                <label for="pref-theme">Temă Visual</label>
-                <select id="pref-theme" name="pref-theme">
-                    <option value="dark">Întuneric (Dark) — Implicit</option>
-                    <option value="dark">Gri Metalic</option>
-                    <option value="dark">Negru Profund</option>
-                </select>
-            </div>
-
-            <div class="field-group">
-                <label for="pref-notifications">Notificări</label>
-                <select id="pref-notifications" name="pref-notifications">
-                    <option value="all">Toate notificările</option>
-                    <option value="important">Doar importante</option>
-                    <option value="none">Niciuna</option>
-                </select>
-            </div>
-
-            <div class="field-group">
-                <label for="pref-workout-reminder">Reamintitor Antrenament (ore de la miezul nopții)</label>
-                <input type="number" id="pref-workout-reminder" name="pref-workout-reminder" min="0" max="23" value="9" placeholder="9">
-            </div>
-
-            <div style="margin-bottom: 1.5rem;">
-                <label style="display: flex; align-items: center; cursor: pointer;">
-                    <input type="checkbox" id="pref-metrics" name="pref-metrics" checked>
-                    <span style="margin-left: 0.75rem; color: var(--chalk);">Colectare date anonim (Ajută la îmbunătățiri)</span>
-                </label>
-            </div>
-
-            <button type="submit" class="btn btn-primary">Salvează Preferințe</button>
-        </form>
-    </div>
-
     <!-- SECȚIUNEA ACTIVITATE -->
     <div class="card">
         <p class="card-title"> Activitate & Date</p>
@@ -180,16 +116,24 @@
                 <span id="account-created" style="color: var(--chalk-dim);">--</span>
             </p>
             <p>
-                <strong>Ultima autentificare:</strong> 
-                <span id="last-login" style="color: var(--chalk-dim);">Tocmai acum</span>
+                <strong>Ultima actualizare cont:</strong> 
+                <span id="account-updated" style="color: var(--chalk-dim);">--</span>
             </p>
             <p>
                 <strong>Antrenamente înregistrate:</strong> 
                 <span id="workout-count" style="color: var(--chalk-dim);">--</span>
             </p>
             <p>
-                <strong>Măsurători salvate:</strong> 
+                <strong>Estimări grăsime salvate:</strong> 
                 <span id="measurement-count" style="color: var(--chalk-dim);">--</span>
+            </p>
+            <p>
+                <strong>Ultimul antrenament:</strong> 
+                <span id="last-workout-at" style="color: var(--chalk-dim);">--</span>
+            </p>
+            <p>
+                <strong>Ultima estimare grăsime:</strong> 
+                <span id="last-estimate-at" style="color: var(--chalk-dim);">--</span>
             </p>
         </div>
     </div>
@@ -198,11 +142,11 @@
     <div class="card" style="border-left: 3px solid var(--warning);">
         <p class="card-title"> Gestionare Date</p>
         <p style="color: var(--chalk-dim); margin-bottom: 1.5rem;">
-            Aceste acțiuni sunt permanente și nu pot fi anulate.
+            Aceste acțiuni afectează datele locale din browser și snapshot-ul exportat al contului.
         </p>
         <div class="field-row">
-            <button class="btn btn-secondary" onclick="exportData()"> Export Date (JSON)</button>
-            <button class="btn btn-secondary" onclick="clearAllData()"> Ștergere Date Locale</button>
+            <button type="button" class="btn btn-secondary" onclick="exportData()"> Export Date (JSON)</button>
+            <button type="button" class="btn btn-secondary" onclick="clearAllData()"> Ștergere Date Locale</button>
         </div>
     </div>
 
@@ -220,6 +164,174 @@ async function logout() {
     window.location.href = 'login.html';
 }
 
+function formatDateTime(value) {
+    if (!value) return '--';
+    const date = new Date(String(value).replace(' ', 'T'));
+    if (Number.isNaN(date.getTime())) return String(value);
+    return new Intl.DateTimeFormat('ro-RO', {
+        dateStyle: 'medium',
+        timeStyle: 'short'
+    }).format(date);
+}
+
+function showMessage(type, text) {
+    const container = document.getElementById('message-container');
+    if (!container) return;
+    container.innerHTML = `<div class="card" style="border-left: 3px solid ${type === 'success' ? 'var(--success)' : 'var(--warning)'}; margin-bottom: 1.5rem;">${text}</div>`;
+}
+
+function downloadJson(filename, payload) {
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+}
+
+async function loadSettings() {
+    try {
+        const res = await fetch('api/user.php?action=profile');
+        const data = await res.json();
+        if (!data.success) {
+            window.location.href = 'login.html';
+            return;
+        }
+
+        const user = data.data.user || {};
+        const stats = data.data.stats || {};
+
+        document.getElementById('profile-firstname').value = user.firstName || '';
+        document.getElementById('profile-lastname').value = user.lastName || '';
+        document.getElementById('profile-email').value = user.email || '';
+
+        const accountCreated = document.getElementById('account-created');
+        const accountUpdated = document.getElementById('account-updated');
+        const workoutCount = document.getElementById('workout-count');
+        const measurementCount = document.getElementById('measurement-count');
+        const lastWorkoutAt = document.getElementById('last-workout-at');
+        const lastEstimateAt = document.getElementById('last-estimate-at');
+
+        if (accountCreated) accountCreated.textContent = formatDateTime(user.createdAt);
+        if (accountUpdated) accountUpdated.textContent = formatDateTime(user.updatedAt);
+        if (workoutCount) workoutCount.textContent = Number.isFinite(data.data.totalWorkouts) ? data.data.totalWorkouts : '0';
+        if (measurementCount) measurementCount.textContent = Number.isFinite(data.data.totalEstimates) ? data.data.totalEstimates : '0';
+        if (lastWorkoutAt) lastWorkoutAt.textContent = formatDateTime(data.data.lastWorkoutAt);
+        if (lastEstimateAt) lastEstimateAt.textContent = formatDateTime(data.data.lastEstimateAt);
+
+        const el = document.getElementById('user-name');
+        const name = user.firstName?.trim() || user.email?.split('@')[0] || 'Utilizator';
+        if (el) el.textContent = name;
+    } catch (_) {
+        window.location.href = 'login.html';
+    }
+}
+
+async function updateProfile(event) {
+    event.preventDefault();
+    const firstName = document.getElementById('profile-firstname').value.trim();
+    const lastName = document.getElementById('profile-lastname').value.trim();
+
+    try {
+        const res = await fetch('api/user.php?action=profile', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ firstName, lastName })
+        });
+        const data = await res.json();
+
+        if (!data.success) {
+            showMessage('error', data.message || 'Nu s-a putut salva profilul.');
+            return;
+        }
+
+        const el = document.getElementById('user-name');
+        if (el) el.textContent = firstName || lastName || 'Utilizator';
+        showMessage('success', data.message || 'Profil actualizat.');
+    } catch (_) {
+        showMessage('error', 'Eroare la actualizarea profilului.');
+    }
+}
+
+async function exportData() {
+    try {
+        const [profileRes, workoutsRes, bodyfatRes, measurementsRes] = await Promise.all([
+            fetch('api/user.php?action=profile'),
+            fetch('api/workouts.php'),
+            fetch('api/user.php?action=bodyfat_list'),
+            fetch('api/measurements.php'),
+        ]);
+
+        const [profile, workouts, bodyfat, measurements] = await Promise.all([
+            profileRes.json(),
+            workoutsRes.json(),
+            bodyfatRes.json(),
+            measurementsRes.json().catch(() => ({ success: false, data: [] })),
+        ]);
+
+        const storageDump = {
+            localStorage: Object.fromEntries(Object.keys(window.localStorage).map((key) => [key, window.localStorage.getItem(key)])),
+            sessionStorage: Object.fromEntries(Object.keys(window.sessionStorage).map((key) => [key, window.sessionStorage.getItem(key)])),
+        };
+
+        downloadJson(`heavydutyro-export-${new Date().toISOString().slice(0, 10)}.json`, {
+            exportedAt: new Date().toISOString(),
+            profile: profile.success ? profile.data : null,
+            workouts: workouts.success ? workouts.data : [],
+            bodyFatEstimates: bodyfat.success ? bodyfat.data : [],
+            measurements: measurements.success ? measurements.data : [],
+            browserStorage: storageDump,
+        });
+
+        showMessage('success', 'Exportul a fost generat.');
+    } catch (_) {
+        showMessage('error', 'Nu s-a putut genera exportul.');
+    }
+}
+
+async function clearAllData() {
+    const confirmed = window.confirm('Aceasta va șterge datele locale din browser și te va deconecta. Continui?');
+    if (!confirmed) return;
+
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+    await logout();
+}
+
+async function changePassword(event) {
+    event.preventDefault();
+    const currentPassword = document.getElementById('old-password').value;
+    const newPassword = document.getElementById('new-password').value;
+    const confirmPassword = document.getElementById('confirm-password').value;
+
+    if (newPassword !== confirmPassword) {
+        showMessage('error', 'Parolele noi nu coincid.');
+        return;
+    }
+
+    try {
+        const res = await fetch('api/user.php?action=password', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ currentPassword, newPassword })
+        });
+        const data = await res.json();
+
+        if (!data.success) {
+            showMessage('error', data.message || 'Nu s-a putut schimba parola.');
+            return;
+        }
+
+        event.target.reset();
+        showMessage('success', data.message || 'Parola a fost schimbată.');
+    } catch (_) {
+        showMessage('error', 'Eroare la schimbarea parolei.');
+    }
+}
+
 (async function () {
     try {
         const res  = await fetch('api/auth.php?action=me');
@@ -230,6 +342,8 @@ async function logout() {
         if (el) el.textContent = name;
     } catch (_) { window.location.href = 'login.html'; }
 })();
+
+loadSettings();
 </script>
 
 </body>

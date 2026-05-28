@@ -31,13 +31,25 @@ match ([$method, $action]) {
 function getProfile(int $userId): void {
     $db = getDB();
  
-    $stmt = $db->prepare('SELECT id, email, first_name, last_name, experience, newsletter FROM users WHERE id = ?');
+    $stmt = $db->prepare('SELECT id, email, first_name, last_name, experience, newsletter, created_at, updated_at FROM users WHERE id = ?');
     $stmt->execute([$userId]);
     $user = $stmt->fetch();
  
     $stmt = $db->prepare('SELECT percentage, weight FROM body_fat_estimates WHERE user_id = ? ORDER BY created_at DESC LIMIT 1');
     $stmt->execute([$userId]);
     $latestBodyFat = $stmt->fetch() ?: [];
+
+    $stmt = $db->prepare('SELECT COUNT(*) as total FROM body_fat_estimates WHERE user_id = ?');
+    $stmt->execute([$userId]);
+    $totalEstimates = (int)$stmt->fetchColumn();
+
+    $stmt = $db->prepare('SELECT created_at FROM workout_journal WHERE user_id = ? ORDER BY date DESC, created_at DESC LIMIT 1');
+    $stmt->execute([$userId]);
+    $lastWorkoutAt = $stmt->fetchColumn() ?: null;
+
+    $stmt = $db->prepare('SELECT created_at FROM body_fat_estimates WHERE user_id = ? ORDER BY created_at DESC LIMIT 1');
+    $stmt->execute([$userId]);
+    $lastEstimateAt = $stmt->fetchColumn() ?: null;
  
     // Număr antrenamente totale
     $stmt = $db->prepare('SELECT COUNT(*) as total FROM workout_journal WHERE user_id = ?');
@@ -51,6 +63,8 @@ function getProfile(int $userId): void {
             'lastName'   => $user['last_name'],
             'experience' => $user['experience'],
             'newsletter' => (bool)$user['newsletter'],
+            'createdAt'   => $user['created_at'],
+            'updatedAt'   => $user['updated_at'],
         ],
         'stats'         => [
             'weight'       => isset($latestBodyFat['weight']) && $latestBodyFat['weight'] !== null ? (float)$latestBodyFat['weight'] : null,
@@ -59,6 +73,9 @@ function getProfile(int $userId): void {
             'targetWeight' => null,
         ],
         'totalWorkouts' => $totalWorkouts,
+        'totalEstimates' => $totalEstimates,
+        'lastWorkoutAt' => $lastWorkoutAt,
+        'lastEstimateAt' => $lastEstimateAt,
     ]]);
 }
  

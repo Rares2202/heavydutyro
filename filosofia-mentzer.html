@@ -210,6 +210,49 @@
         .info-highlight strong {
             color: var(--chalk);
         }
+
+        /* Tribute specific styles */
+        .tribute-hero {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 1.5rem;
+            align-items: center;
+            margin: 2rem 0;
+        }
+
+        .tribute-hero img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border: 1px solid var(--plate);
+            background: #222;
+        }
+
+        .book-list {
+            display: grid;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .testimonial {
+            background: var(--forge);
+            border: 1px solid var(--plate);
+            padding: 1rem;
+            font-size: 0.95rem;
+            color: var(--chalk-dim);
+        }
+
+        /* Make tribute/book links white */
+        .tribute-hero a, .book-reference a { color: #ffffff; text-decoration: underline; }
+        /* also ensure links inside tribute section are white */
+        #tribute a { color: #ffffff; text-decoration: underline; }
     </style>
 </head>
 
@@ -269,6 +312,50 @@
             Sistemul său, Heavy Duty, a schimbat modul în care milioane de oameni se antrenează astăzi.
         </p>
     </div>
+
+    <!-- TRIBUTE HERO: Omagiu lui Mike Mentzer -->
+    <section class="philosophy-section" id="tribute">
+        <div class="tribute-hero">
+            <div>
+                <img src="assets/images/mentzer-olympia-1980.jpg" alt="Mike Mentzer — Mr. Olympia 1980">
+            </div>
+            <div>
+                <h2 style="font-family:'Bebas Neue', sans-serif; font-size:1.8rem; margin-bottom:0.5rem;">Mike Mentzer — Un Om, O Moștenire</h2>
+                <p style="color:var(--chalk-dim);line-height:1.6">Acest spațiu e un omagiu adus vieții, ideilor și impactului lăsat de Mike Mentzer. Dacă ai o fotografie istorică, adaug-o în <strong>assets/images/mentzer-olympia-1980.jpg</strong> pentru afișarea cardului.</p>
+
+                <div class="book-list">
+                    <div class="book-reference">
+                        <div class="book-title"><a href="https://archive.org/search.php?query=Heavy+Duty+Mike+Mentzer" target="_blank" rel="noopener">Heavy Duty (1986)</a></div>
+                        <div class="book-meta">Volumul I — concept și aplicații (căutare Archive.org)</div>
+                    </div>
+                    <div class="book-reference">
+                        <div class="book-title"><a href="https://archive.org/search.php?query=Heavy+Duty+II+Mind+Body+Mentzer" target="_blank" rel="noopener">Heavy Duty II - Mind & Body (1992)</a></div>
+                        <div class="book-meta">Psihologia performanței (căutare Archive.org)</div>
+                    </div>
+                    <div class="book-reference">
+                        <div class="book-title"><a href="https://archive.org/search.php?query=The+Quotable+Mentzer" target="_blank" rel="noopener">The Quotable Mentzer (2005)</a></div>
+                        <div class="book-meta">Antologie postumă (căutare Archive.org)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h3 style="font-family:'Bebas Neue', sans-serif; margin-top:1.25rem;">Mărturii</h3>
+        <div class="testimonial-grid">
+            <div class="testimonial"><strong>Dorian Yates</strong><div style="margin-top:0.5rem;color:var(--chalk-dim)">„Mike Mentzer m-a învățat să gândesc antrenamentul. Principiile sale mi-au schimbat cariera.”</div></div>
+            <div class="testimonial"><strong>John Meadows</strong><div style="margin-top:0.5rem;color:var(--chalk-dim)">„Un om de știință al culturismului — a adus rigoare și consecvență.”</div></div>
+            <div class="testimonial"><strong>Urmăritori</strong><div style="margin-top:0.5rem;color:var(--chalk-dim)">„Am redus timpul la sală și am obținut rezultate mai bune — mulțumesc, Mentzer.”</div></div>
+        </div>
+        
+        <h3 style="font-family:'Bebas Neue', sans-serif; margin-top:1.25rem;">Antrenamente și protejați (exemple)</h3>
+        <div style="margin-top:0.5rem; color:var(--chalk-dim);">
+            <ul>
+                <li><a href="https://en.wikipedia.org/wiki/Dorian_Yates" target="_blank" rel="noopener">Dorian Yates</a> — introdus la metoda High-Intensity Training de către Mentzer; Yates a adoptat și adaptat principiile Heavy Duty și a devenit multiplul campion Mr. Olympia (1992–1997).</li>
+                <li><a href="https://en.wikipedia.org/wiki/Ray_Mentzer" target="_blank" rel="noopener">Ray Mentzer</a> — fratele lui Mike și competitor de top (Mr. America etc.), care a lucrat îndeaproape cu Mike și a urmat principiile Heavy Duty.</li>
+            </ul>
+            <p style="font-size:0.9rem; margin-top:0.5rem; color:var(--chalk-dim);">Notă: Mike Mentzer a avut, de asemenea, numeroși clienți telefonici și colaboratori care au adoptat metodologia sa; exemplele de mai sus sunt figuri documentate care au avut succes după influența sau colaborarea cu Mentzer.</p>
+        </div>
+    </section>
 
     <!-- VIAȚA LUI MIKE MENTZER -->
     <section class="philosophy-section">
