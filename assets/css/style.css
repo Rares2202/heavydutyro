@@ -1,0 +1,562 @@
+/* =====================================================
+   HEAVYDUTYRO — DESIGN SYSTEM CSS
+   Color Scheme: Industrial Brutalist
+   Fonts: Bebas Neue, Crimson Pro, IBM Plex Mono
+   ===================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;700&display=swap');
+
+/* ── COLOR VARIABLES ── */
+:root {
+    --iron: #0a0a0a;
+    --steel: #111111;
+    --forge: #1a1a1a;
+    --rust: #c8370a;
+    --rust-bright: #e84010;
+    --chalk: #f0ece4;
+    --chalk-dim: #b8b0a4;
+    --plate: #2a2a2a;
+    --gold: #c9a84c;
+    --success: #3daa6e;
+    --warning: #d4a520;
+    --error: #c8370a;
+    
+    /* Body Fat Categories */
+    --bf-elite: #3daa6e;
+    --bf-athletic: #7bc67a;
+    --bf-fitness: #c9a84c;
+    --bf-average: #e08b30;
+    --bf-obese: #c8370a;
+}
+
+/* ── RESET ── */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* ── BASE STYLES ── */
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background: var(--iron);
+    color: var(--chalk);
+    font-family: 'Crimson Pro', Georgia, serif;
+    font-size: 16px;
+    line-height: 1.6;
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    grid-template-rows: auto 1fr;
+    overflow-x: hidden;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+    grid-column: 1 / -1;
+    background: var(--steel);
+    border-bottom: 1px solid var(--plate);
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.topbar-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    letter-spacing: 0.05em;
+    color: var(--chalk);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+}
+
+.topbar-logo span {
+    color: var(--rust);
+}
+
+.topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.topbar-user {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--chalk-dim);
+}
+
+.topbar-user strong {
+    color: var(--chalk);
+}
+
+.topbar-logout {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--chalk-dim);
+    text-decoration: none;
+    border: 1px solid var(--plate);
+    padding: 0.35rem 0.8rem;
+    transition: color 0.2s, border-color 0.2s;
+    cursor: pointer;
+    background: none;
+}
+
+.topbar-logout:hover {
+    color: var(--rust);
+    border-color: var(--rust);
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+    background: var(--steel);
+    border-right: 1px solid var(--plate);
+    padding: 1.5rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    overflow-y: auto;
+}
+
+.sidebar-section-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--chalk-dim);
+    padding: 1rem 1.5rem 0.5rem;
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.65rem 1.5rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--chalk-dim);
+    text-decoration: none;
+    border-left: 2px solid transparent;
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+
+.sidebar-link:hover {
+    color: var(--chalk);
+    background: var(--forge);
+}
+
+.sidebar-link.active {
+    color: var(--chalk);
+    border-left-color: var(--rust);
+    background: rgba(200, 55, 10, 0.08);
+}
+
+.sidebar-icon {
+    font-size: 1.2rem;
+    min-width: 1.2rem;
+}
+
+/* ── MAIN CONTENT ── */
+.main-content {
+    padding: 2.5rem;
+    overflow-y: auto;
+}
+
+/* ── PAGE HEADER ── */
+.page-header {
+    margin-bottom: 2.5rem;
+}
+
+.page-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--rust);
+    margin-bottom: 0.5rem;
+}
+
+h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.8rem;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+}
+
+h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.8rem;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+}
+
+h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.3rem;
+    letter-spacing: 0.02em;
+}
+
+.page-subtitle {
+    font-size: 0.95rem;
+    color: var(--chalk-dim);
+}
+
+/* ── CARD ── */
+.card {
+    background: var(--forge);
+    border: 1px solid var(--plate);
+    padding: 1.7rem;
+    margin-bottom: 1.5rem;
+}
+
+
+.card-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--chalk-dim);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.card-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--plate);
+}
+
+/* ── INFO BAR ── */
+.info-bar {
+    background: var(--forge);
+    border: 1px solid var(--plate);
+    border-left: 3px solid var(--gold);
+    padding: 1rem 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.info-bar p {
+    font-size: 0.9rem;
+    color: var(--chalk-dim);
+    line-height: 1.5;
+}
+
+.info-bar strong {
+    color: var(--chalk);
+}
+
+/* ── FORM FIELDS ── */
+.field-group {
+    margin-bottom: 1.25rem;
+}
+
+.field-group label {
+    display: block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--chalk-dim);
+    margin-bottom: 0.4rem;
+}
+
+.field-group input,
+.field-group select,
+.field-group textarea {
+    width: 100%;
+    background: var(--steel);
+    border: 1px solid var(--plate);
+    color: var(--chalk);
+    font-family: 'Crimson Pro', serif;
+    font-size: 1rem;
+    padding: 0.75rem 1rem;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+  /*  -webkit-appearance: none; */
+}
+
+.field-group input:focus,
+.field-group select:focus,
+.field-group textarea:focus {
+    border-color: var(--rust);
+    background: var(--forge);
+}
+
+.field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+/* ── BUTTONS ── */
+.btn {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.8rem 1.5rem;
+    border: 2px solid;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-primary {
+    background: var(--rust);
+    border-color: var(--rust);
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background: transparent;
+    color: var(--rust);
+}
+
+.btn-secondary {
+    background: transparent;
+    border-color: var(--chalk-dim);
+    color: var(--chalk-dim);
+}
+
+.btn-secondary:hover {
+    border-color: var(--chalk);
+    color: var(--chalk);
+}
+
+.btn-small {
+    padding: 0.5rem 1rem;
+    font-size: 0.65rem;
+}
+
+/* ── GRID LAYOUTS ── */
+.grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.grid-3 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.grid-auto {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+/* ── STAT CARDS ── */
+.stat-card {
+    text-align: center;
+}
+
+.stat-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3.5rem;
+    line-height: 1;
+    color: var(--rust);
+    margin: 1rem 0;
+}
+
+.stat-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--chalk-dim);
+}
+
+/* ── TABLES ── */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+table thead th {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--chalk-dim);
+    text-align: left;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--plate);
+}
+
+table tbody tr {
+    border-bottom: 1px solid rgba(42, 42, 42, 0.6);
+    transition: background 0.2s;
+}
+
+table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+table tbody td {
+    padding: 0.75rem 1rem;
+    color: var(--chalk-dim);
+}
+
+table tbody td:first-child {
+    color: var(--chalk);
+}
+
+/* ── LIST STYLES ── */
+.list-item {
+    padding: 1rem;
+    background: var(--steel);
+    border: 1px solid var(--plate);
+    margin-bottom: 0.75rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background 0.2s;
+}
+
+.list-item:hover {
+    background: var(--forge);
+}
+
+.list-item-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    margin-bottom: 0.25rem;
+}
+
+.list-item-meta {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--chalk-dim);
+    text-transform: uppercase;
+}
+
+/* ── PROGRESS BAR ── */
+.progress-bar {
+    height: 8px;
+    background: var(--plate);
+    margin: 1rem 0;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--success);
+    width: 0%;
+    transition: width 0.3s;
+}
+
+/* ── BADGES ── */
+.badge {
+    display: inline-block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.6rem;
+    background: rgba(200, 55, 10, 0.2);
+    border: 1px solid rgba(200, 55, 10, 0.3);
+    color: var(--rust);
+}
+
+.badge.success {
+    background: rgba(61, 170, 110, 0.2);
+    border-color: rgba(61, 170, 110, 0.3);
+    color: var(--success);
+}
+
+.badge.warning {
+    background: rgba(212, 165, 32, 0.2);
+    border-color: rgba(212, 165, 32, 0.3);
+    color: var(--warning);
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 1024px) {
+    .grid-2 {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+        display: none;
+    }
+
+    .topbar {
+        padding: 0 1rem;
+    }
+
+    .main-content {
+        padding: 1.5rem;
+    }
+
+    .page-header {
+        margin-bottom: 1.5rem;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    h2 {
+        font-size: 1.4rem;
+    }
+
+    .field-row {
+        grid-template-columns: 1fr;
+    }
+
+    .grid-2,
+    .grid-3,
+    .grid-auto {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1.5rem;
+    }
+
+    h2 {
+        font-size: 1.1rem;
+    }
+
+    .card {
+        padding: 1rem;
+    }
+
+    .btn {
+        width: 100%;
+        text-align: center;
+    }
+}

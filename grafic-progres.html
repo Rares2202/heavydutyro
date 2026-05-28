@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grafic Progres — HeavyDutyRO</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+    <a href="index.html" class="topbar-logo">Heavy<span>Duty</span>RO</a>
+    <div class="topbar-right">
+        <span class="topbar-user">Bun venit, <strong id="user-name">Utilizator</strong></span>
+        <a href="#" onclick="logout(); return false;" class="topbar-logout">Ieșire</a>
+    </div>
+</header>
+
+<nav class="sidebar">
+    <span class="sidebar-section-label">General</span>
+    <a href="dashboard.html" class="sidebar-link">
+       Tablou de Bord
+    </a>
+    <a href="workout-planner.html" class="sidebar-link">
+      Planificator
+    </a>
+    <a href="body-fat-estimator.html" class="sidebar-link">
+        Estimare Grăsime
+    </a>
+
+    <span class="sidebar-section-label">Progres</span>
+    <a href="grafic-progres.html" class="sidebar-link active">
+        Grafic Progres
+    </a>
+    <a href="jurnal-antrenament.html" class="sidebar-link">
+       Jurnal
+    </a>
+    <a href="nutritie.html" class="sidebar-link">
+         Nutriție
+    </a>
+
+    <span class="sidebar-section-label">Educație</span>
+    <a href="filosofia-mentzer.html" class="sidebar-link">
+         Filosofia Mentzer
+    </a>
+
+    <span class="sidebar-section-label">Cont</span>
+    <a href="setari.html" class="sidebar-link">
+       Setări
+    </a>
+</nav>
+
+<main class="main-content">
+
+    <header class="page-header">
+        <p class="page-tag">Monitorare Performanță</p>
+        <h1>Grafic Progres</h1>
+        <p class="page-subtitle">Urmărește evoluția greutății, grăsimii corporale și forței</p>
+    </header>
+
+    <div class="info-bar">
+        <p>
+            <strong>Progresul pe termen lung:</strong> Graficele se actualizează pe măsură ce adaugi noi măsurători.
+            Datele se salvează local și sunt disponibile oricând.
+        </p>
+    </div>
+
+    <!-- STATISTICI RAPIDE -->
+    <div class="grid-3">
+        <div class="card stat-card">
+            <p class="card-title">Greutate Curentă</p>
+            <div class="stat-value" id="current-weight">84.5</div>
+            <p class="stat-label">kg</p>
+            <p style="font-size: 0.8rem; color: var(--chalk-dim); margin-top: 0.7rem;">Schimbare: <span style="color: var(--success);">-0.8 kg ↓</span></p>
+        </div>
+
+        <div class="card stat-card">
+            <p class="card-title">Grăsime Corporală</p>
+            <div class="stat-value" id="current-bodyfat">14.2</div>
+            <p class="stat-label">%</p>
+            <p style="font-size: 0.8rem; color: var(--chalk-dim); margin-top: 0.7rem;">Categoria: <span style="color: var(--gold);">Athletic</span></p>
+        </div>
+
+        <div class="card stat-card">
+            <p class="card-title">Zile Consecutiv</p>
+            <div class="stat-value" id="consecutive-days">12</div>
+            <p class="stat-label">zile</p>
+            <p style="font-size: 0.8rem; color: var(--chalk-dim); margin-top: 0.7rem;"><span style = "color: red;">Fără</span> pauză.</p>
+        </div>
+    </div>
+
+    <!-- GRAFIC GREUTATE -->
+    <div class="card">
+        <p class="card-title"> Evoluția Greutății (Ultimele 3 luni)</p>
+        <div style="height: 300px; background: var(--steel); border: 1px solid var(--plate); display: flex; align-items: flex-end; justify-content: space-around; padding: 1rem; gap: 0.5rem;" id="weight-chart">
+            <div style="width: 100%; background: linear-gradient(to top, var(--rust), var(--rust-bright)); height: 60%; border-radius: 2px; position: relative;">
+                <span style="position: absolute; bottom: -1.5rem; left: 50%; transform: translateX(-50%); font-size: 0.75rem; color: var(--chalk-dim);">Feb 1</span>
+            </div>
+            <div style="width: 100%; background: linear-gradient(to top, var(--rust), var(--rust-bright)); height: 65%; border-radius: 2px; position: relative;">
+                <span style="position: absolute; bottom: -1.5rem; left: 50%; transform: translateX(-50%); font-size: 0.75rem; color: var(--chalk-dim);">Feb 15</span>
+            </div>
+            <div style="width: 100%; background: linear-gradient(to top, var(--rust), var(--rust-bright)); height: 70%; border-radius: 2px; position: relative;">
+                <span style="position: absolute; bottom: -1.5rem; left: 50%; transform: translateX(-50%); font-size: 0.75rem; color: var(--chalk-dim);">Mar 1</span>
+            </div>
+            <div style="width: 100%; background: linear-gradient(to top, var(--rust), var(--rust-bright)); height: 72%; border-radius: 2px; position: relative;">
+                <span style="position: absolute; bottom: -1.5rem; left: 50%; transform: translateX(-50%); font-size: 0.75rem; color: var(--chalk-dim);">Mar 15</span>
+            </div>
+            <div style="width: 100%; background: linear-gradient(to top, var(--success), #5ec986); height: 58%; border-radius: 2px; position: relative;">
+                <span style="position: absolute; bottom: -1.5rem; left: 50%; transform: translateX(-50%); font-size: 0.75rem; color: var(--chalk-dim);">Apr 2</span>
+            </div>
+        </div>
+        <p style="margin-top: 2.5rem; font-size: 0.85rem; color: var(--chalk-dim); text-align: center;">
+            Trend descendent: -2.1 kg în 3 luni ✓
+        </p>
+    </div>
+
+    <!-- TABEL MĂSURĂTORI -->
+    <div class="card">
+        <p class="card-title">📋 Istoric Măsurători</p>
+        <table id="history-table">
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Greutate</th>
+                    <th>Grăsime %</th>
+                    <th>Muşchi kg</th>
+                    <th>Schimbare</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>02 Apr 2026</td>
+                    <td>84.5 kg</td>
+                    <td>14.2%</td>
+                    <td>72.6 kg</td>
+                    <td><span style="color: var(--success);">-0.8 kg ↓</span></td>
+                </tr>
+                <tr>
+                    <td>26 Mar 2026</td>
+                    <td>85.3 kg</td>
+                    <td>14.8%</td>
+                    <td>72.8 kg</td>
+                    <td><span style="color: var(--success);">-0.5 kg ↓</span></td>
+                </tr>
+                <tr>
+                    <td>12 Mar 2026</td>
+                    <td>85.8 kg</td>
+                    <td>15.2%</td>
+                    <td>72.8 kg</td>
+                    <td><span style="color: red;">+0.2 kg ↑</span></td>
+                </tr>
+                <tr>
+                    <td>26 Feb 2026</td>
+                    <td>85.6 kg</td>
+                    <td>15.5%</td>
+                    <td>72.2 kg</td>
+                    <td><span style="color: red;">+0.4 kg ↑</span></td>
+                </tr>
+                <tr>
+                    <td>02 Feb 2026</td>
+                    <td>85.2 kg</td>
+                    <td>15.8%</td>
+                    <td>71.7 kg</td>
+                    <td>Inițial</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ADAUGĂ MĂSURĂTOARE -->
+    <div class="card">
+        <p class="card-title"> Adaugă Măsurătoare Nouă</p>
+        <form id="measurement-form" onsubmit="addMeasurement(event)">
+            <div class="field-row">
+                <div class="field-group">
+                    <label for="meas-date">Data</label>
+                    <input type="date" id="meas-date" name="meas-date" required>
+                </div>
+                <div class="field-group">
+                    <label for="meas-weight">Greutate (kg)</label>
+                    <input type="number" id="meas-weight" name="meas-weight" step="0.1" placeholder="84.5" required>
+                </div>
+            </div>
+            <div class="field-row">
+                <div class="field-group">
+                    <label for="meas-bodyfat">Grăsime Corporală (%)</label>
+                    <input type="number" id="meas-bodyfat" name="meas-bodyfat" step="0.1" placeholder="14.2" required>
+                </div>
+
+<script>
+async function logout() {
+    await fetch('api/auth.php?action=logout', { method: 'POST' });
+    window.location.href = 'login.html';
+}
+
+// ── Construiește bara de chart ──────────────────────────
+function buildChart(measurements) {
+    if (!measurements || measurements.length === 0) return;
+
+    const chart = document.getElementById('weight-chart');
+    if (!chart) return;
+
+    // Ia ultimele 8 măsurători, în ordine cronologică
+    const recent = [...measurements].reverse().slice(-8);
+    const weights = recent.map(m => m.weight);
+    const maxW    = Math.max(...weights);
+    const minW    = Math.min(...weights);
+    const range   = maxW - minW || 1;
+
+    chart.innerHTML = recent.map(m => {
+        const heightPct = 20 + ((m.weight - minW) / range) * 70;
+        const dateParts = m.date.split('-');
+        const label     = dateParts[2] + '/' + dateParts[1];
+        const color     = m.change !== null && m.change < 0
+            ? 'linear-gradient(to top, var(--success), #5ec986)'
+            : 'linear-gradient(to top, var(--rust), var(--rust-bright))';
+        return `<div style="width:100%;background:${color};height:${heightPct}%;border-radius:2px;position:relative;title='${m.weight}kg'">
+            <span style="position:absolute;bottom:-1.5rem;left:50%;transform:translateX(-50%);font-size:.75rem;color:var(--chalk-dim);white-space:nowrap">${label}</span>
+        </div>`;
+    }).join('');
+}
+
+// ── Randează tabelul ────────────────────────────────────
+function renderTable(measurements) {
+    const tbody = document.querySelector('#history-table tbody');
+    if (!tbody) return;
+
+    if (measurements.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--chalk-dim)">Nicio măsurătoare înregistrată.</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = measurements.map(m => {
+        const changeHtml = m.change === null
+            ? '<span>Inițial</span>'
+            : m.change <= 0
+                ? `<span style="color:var(--success)">${m.change.toFixed(1)} kg ↓</span>`
+                : `<span style="color:red">+${m.change.toFixed(1)} kg ↑</span>`;
+
+        const dateFmt = new Date(m.date).toLocaleDateString('ro-RO', { day:'2-digit', month:'short', year:'numeric' });
+        return `<tr>
+            <td>${dateFmt}</td>
+            <td>${m.weight} kg</td>
+            <td>${m.bodyfat ?? '—'}%</td>
+            <td>${m.muscle ?? '—'} kg</td>
+            <td>${changeHtml} <button onclick="deleteMeasurement(${m.id})" class="btn btn-small" style="margin-left:.5rem;border-color:var(--rust);color:var(--rust)">✕</button></td>
+        </tr>`;
+    }).join('');
+}
+
+async function deleteMeasurement(id) {
+    if (!confirm('Ștergi această măsurătoare?')) return;
+    try {
+        const res  = await fetch(`api/measurements.php?id=${id}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (data.success) loadMeasurements();
+        else alert(data.message);
+    } catch (_) { alert('Eroare rețea.'); }
+}
+
+async function loadMeasurements() {
+    try {
+        const res  = await fetch('api/measurements.php');
+        const data = await res.json();
+        if (!data.success) return;
+
+        const m = data.data;
+
+        // Statistici rapide
+        if (m.length > 0) {
+            document.getElementById('current-weight').textContent = m[0].weight.toFixed(1);
+            document.getElementById('current-bodyfat').textContent = m[0].bodyfat?.toFixed(1) ?? '--';
+        }
+
+        buildChart(m);
+        renderTable(m);
+    } catch (_) {}
+}
+
+async function addMeasurement(event) {
+    event.preventDefault();
+    const date   = document.getElementById('meas-date').value;
+    const weight = parseFloat(document.getElementById('meas-weight').value);
+    const bf     = parseFloat(document.getElementById('meas-bodyfat').value);
+    const muscle = parseFloat(document.getElementById('meas-muscle').value);
+
+    const btn = event.target.querySelector('button');
+    btn.disabled    = true;
+    btn.textContent = 'Se salvează...';
+
+    try {
+        const res  = await fetch('api/measurements.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({ date, weight, bodyfat: bf, muscle }),
+        });
+        const data = await res.json();
+
+        if (data.success) {
+            event.target.reset();
+            document.getElementById('meas-date').valueAsDate = new Date();
+            await loadMeasurements();
+        } else {
+            alert(data.message);
+        }
+    } catch (_) { alert('Eroare rețea.'); }
+
+    btn.disabled    = false;
+    btn.textContent = 'Salvează Măsurătoare';
+}
+
+// ── Init ─────────────────────────────────────────────────
+(async function () {
+    try {
+        const res  = await fetch('api/auth.php?action=me');
+        const data = await res.json();
+        if (!data.success) { window.location.href = 'login.html'; return; }
+        const name = data.user.firstName?.trim() || data.user.email.split('@')[0];
+        document.getElementById('user-name').textContent = name;
+    } catch (_) { window.location.href = 'login.html'; return; }
+
+    document.getElementById('meas-date').valueAsDate = new Date();
+    document.getElementById('measurement-form').addEventListener('submit', addMeasurement);
+    await loadMeasurements();
+})();
+</script>
+
+</body>
+</html>

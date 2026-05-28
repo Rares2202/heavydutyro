@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planificator Antrenament — HeavyDutyRO</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        /* Planner specific styles */
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--plate);
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 1rem;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.75rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--chalk-dim);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: color 0.2s, border-color 0.2s;
+            margin-bottom: -1px;
+        }
+
+        .tab-btn:hover {
+            color: var(--chalk);
+        }
+
+        .tab-btn.active {
+            color: var(--rust);
+            border-bottom-color: var(--rust);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .routine-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .routine-card {
+            background: var(--forge);
+            border: 1px solid var(--plate);
+            padding: 1.75rem;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .routine-card:hover {
+            border-color: var(--rust);
+            background: rgba(200, 55, 10, 0.05);
+        }
+
+        .routine-card.selected {
+            border-color: var(--rust);
+            background: rgba(200, 55, 10, 0.1);
+        }
+
+        .routine-name {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.4rem;
+            color: var(--chalk);
+            margin-bottom: 0.5rem;
+        }
+
+        .routine-meta {
+            font-size: 0.85rem;
+            color: var(--chalk-dim);
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .routine-btn {
+            background: var(--rust);
+            color: #fff;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.72rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: background 0.2s;
+            width: 100%;
+        }
+
+        .routine-btn:hover {
+            background: var(--rust-bright);
+        }
+
+        .routine-description {
+            font-size: 0.82rem;
+            color: var(--chalk-dim);
+            margin-bottom: 1rem;
+        }
+
+        .exercise-item {
+            background: var(--steel);
+            border: 1px solid var(--plate);
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 1rem;
+            align-items: start;
+        }
+
+        .exercise-info h4 {
+            font-size: 1.1rem;
+            color: var(--chalk);
+            margin-bottom: 0.25rem;
+        }
+
+        .exercise-info p {
+            font-size: 0.82rem;
+            color: var(--chalk-dim);
+            margin-bottom: 0.25rem;
+        }
+
+        .exercise-remove {
+            background: var(--rust);
+            color: #fff;
+            border: none;
+            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            height: fit-content;
+        }
+
+        .exercise-remove:hover {
+            background: var(--rust-bright);
+        }
+
+        .form-section {
+            background: var(--forge);
+            border: 1px solid var(--plate);
+            padding: 1.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-title {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.72rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--rust);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.62rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--chalk-dim);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            background: var(--steel);
+            border: 1px solid var(--plate);
+            color: var(--chalk);
+            font-family: 'Crimson Pro', serif;
+            font-size: 0.95rem;
+            padding: 0.75rem 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            border-color: var(--rust);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .btn-add {
+            background: var(--rust);
+            color: #fff;
+            border: 2px solid var(--rust);
+            padding: 0.9rem 2rem;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.82rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+            width: 100%;
+        }
+
+        .btn-add:hover {
+            background: transparent;
+            color: var(--rust);
+        }
+
+        .btn-save {
+            background: #3daa6e;
+            color: #fff;
+            border: 2px solid #3daa6e;
+            padding: 0.9rem 2rem;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.82rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .btn-save:hover {
+            background: transparent;
+            color: #3daa6e;
+        }
+
+        .workouts-list {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .workout-item {
+            background: var(--forge);
+            border: 1px solid var(--plate);
+            padding: 1.5rem;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .workout-name {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.3rem;
+            color: var(--chalk);
+            margin-bottom: 0.5rem;
+        }
+
+        .workout-meta {
+            font-size: 0.85rem;
+            color: var(--chalk-dim);
+        }
+
+        .workout-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-small {
+            background: var(--steel);
+            color: var(--chalk);
+            border: 1px solid var(--plate);
+            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .btn-small:hover {
+            border-color: var(--rust);
+        }
+
+        .message {
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border-left: 3px solid var(--rust);
+            background: rgba(200, 55, 10, 0.1);
+            color: var(--chalk);
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="topbar">
+    <a href="index.html" class="topbar-logo">Heavy<span>Duty</span>RO</a>
+    <div class="topbar-right">
+        <span class="topbar-user">Bun venit, <strong id="user-name">Utilizator</strong></span>
+        <a href="#" onclick="logout(); return false;" class="topbar-logout">Ieșire</a>
+    </div>
+</header>
+
+<nav class="sidebar">
+    <span class="sidebar-section-label">General</span>
+    <a href="dashboard.html" class="sidebar-link">
+         Tablou de Bord
+    </a>
+    <a href="workout-planner.html" class="sidebar-link active">
+        Planificator
+    </a>
+    <a href="body-fat-estimator.html" class="sidebar-link">
+     Estimare Grăsime
+    </a>
+
+    <span class="sidebar-section-label">Progres</span>
+    <a href="grafic-progres.html" class="sidebar-link">
+   Grafic Progres
+    </a>
+    <a href="jurnal-antrenament.html" class="sidebar-link">
+  Jurnal
+    </a>
+    <a href="nutritie.html" class="sidebar-link">
+    Nutriție
+    </a>
+
+    <span class="sidebar-section-label">Educație</span>
+    <a href="filosofia-mentzer.html" class="sidebar-link">
+        Filosofia Mentzer
+    </a>
+
+    <span class="sidebar-section-label">Cont</span>
+    <a href="setari.html" class="sidebar-link">
+      Setări
+    </a>
+</nav>
+
+<main class="main-content">
+
+    <header class="page-header">
+        <p class="page-tag">Planificator Antrenament</p>
+        <h1>Construiește-ți<br>Rutina Ideală</h1>
+        <p class="page-subtitle">Alege o rutină Mentzer prestabilită sau creează-ți una customizată</p>
+    </header>
+
+    <div class="info-bar">
+        <p>
+            <strong>Heavy Duty Training:</strong> Mike Mentzer's system focuses on high intensity, low volume. 
+            Fiecare mișcare la efort maxim, apoi recuperare profundă pentru maxim progres.
+        </p>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('routines')"> Rutine Prestabilite</button>
+        <button class="tab-btn" onclick="switchTab('custom')"> Custom Workout</button>
+        <button class="tab-btn" onclick="switchTab('manage')"> Antrenamentele Mele</button>
+    </div>
+
+    <!-- TAB 1: RUTINE PRESTABILITE -->
+    <div id="routines" class="tab-content active">
+        <p style="color: var(--chalk-dim); margin-bottom: 1.5rem;">
+            Alege una din rutinele Mentzer bazate pe disponibilitate și experiență:
+        </p>
+
+        <div class="routine-grid">
+            <!-- Full Body 3x -->
+            <div class="routine-card" onclick="selectRoutine('fullbody3')">
+                <p class="routine-name">Full Body</p>
+                <p class="routine-meta">
+                    <strong>Frecvență:</strong> 3x/săptămână<br>
+                    <strong>Durată sesie:</strong> 45-60 min<br>
+                    <strong>Nivelul:</strong> Intermediar
+                </p>
+                <p class="routine-description">
+                    Optim pentru greutate medie de antrenament. Fiecare grup muscular 1-2 ori/săptămână.
+                </p>
+                <button class="routine-btn" onclick="loadRoutine('fullbody3')">📥 Încarcă</button>
+            </div>
+
+            <!-- Upper/Lower 4x -->
+            <div class="routine-card" onclick="selectRoutine('upper-lower')">
+                <p class="routine-name">Upper/Lower</p>
+                <p class="routine-meta">
+                    <strong>Frecvență:</strong> 4x/săptămână<br>
+                    <strong>Durată sesie:</strong> 50-70 min<br>
+                    <strong>Nivelul:</strong> Avansat
+                </p>
+                <p class="routine-description">
+                    Split optimal: 2x Upper + 2x Lower. Recuperare profundă între sesiuni.
+                </p>
+                <button class="routine-btn" onclick="loadRoutine('upper-lower')"> Încarcă</button>
+            </div>
+
+            <!-- Chest/Back Focus -->
+            <div class="routine-card" onclick="selectRoutine('chest-back')">
+                <p class="routine-name">Chest/Back Focus</p>
+                <p class="routine-meta">
+                    <strong>Frecvență:</strong> 4x/săptămână<br>
+                    <strong>Durată sesie:</strong> 60 min<br>
+                    <strong>Nivelul:</strong> Expert
+                </p>
+                <p class="routine-description">
+                    Specializare: Piept 2x + Spate 2x. Maxim volum pentru masa.
+                </p>
+                <button class="routine-btn" onclick="loadRoutine('chest-back')"> Încarcă</button>
+            </div>
+
+            <!-- Beginner Full Body -->
+            <div class="routine-card" onclick="selectRoutine('beginner')">
+                <p class="routine-name">Beginner Full Body</p>
+                <p class="routine-meta">
+                    <strong>Frecvență:</strong> 3x/săptămână<br>
+                    <strong>Durată sesie:</strong> 40-50 min<br>
+                    <strong>Nivelul:</strong> Începător
+                </p>
+                <p class="routine-description">
+                    Exerciții compuse, forme perfecte. Bază solidă pentru progres.
+                </p>
+                <button class="routine-btn" onclick="loadRoutine('beginner')"> Încarcă</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 2: CUSTOM WORKOUT -->
+    <div id="custom" class="tab-content">
+        <div id="message-container"></div>
+
+        <form onsubmit="saveWorkout(event);">
+            <!-- WORKOUT INFO -->
+            <div class="form-section">
+                <p class="form-title">📋 Informații Antrenament</p>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Nume Antrenament</label>
+                        <input type="text" id="workout-name" class="form-input" placeholder="ex: Chest & Triceps" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Durată (minute)</label>
+                        <input type="number" id="workout-duration" class="form-input" placeholder="60" min="15" max="180" value="60">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Intensitate</label>
+                        <select id="workout-intensity" class="form-select">
+                            <option value="Maxim">Maxim (4-6 reps)</option>
+                            <option value="Înalt">Înalt (6-8 reps)</option>
+                            <option value="Mediu">Mediu (8-12 reps)</option>
+                            <option value="Ușor">Ușor (12+ reps)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Note</label>
+                    <textarea id="workout-notes" class="form-textarea" placeholder="Adaugă note despre workout..."></textarea>
+                </div>
+            </div>
+
+            <!-- ADAUGĂ EXERCIȚIU -->
+            <div class="form-section">
+                <p class="form-title"> Adaugă Exercițiu</p>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Nume Exercițiu</label>
+                        <input type="text" id="exercise-name" class="form-input" placeholder="ex: Bench Press">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Seturi</label>
+                        <input type="number" id="exercise-sets" class="form-input" value="3" min="1" max="10">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Repetări</label>
+                        <input type="text" id="exercise-reps" class="form-input" placeholder="ex: 4-6 sau 8-10">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Descriere / Note</label>
+                    <textarea id="exercise-notes" class="form-textarea" placeholder="Greutate, form, progres..." style="min-height: 60px;"></textarea>
+                </div>
+
+                <button type="button" class="btn-add" onclick="addExercise();"> Adaugă la Antrenament</button>
+            </div>
+
+            <!-- EXERCIȚII ADĂUGATE -->
+            <div class="form-section">
+                <p class="form-title"> Exerciții în Antrenament</p>
+                <div id="exercises-list"></div>
+            </div>
+
+            <button type="submit" class="btn-save"> Salvează Antrenament</button>
+        </form>
+    </div>
+
+    <!-- TAB 3: MANAGE WORKOUTS -->
+    <div id="manage" class="tab-content">
+        <div id="workouts-container" class="workouts-list"></div>
+    </div>
+
+</main>
+
+<script>
+// Verificare autentificare - citit din API
+window.addEventListener('load', async function() {
+    try {
+        const res = await fetch('api/auth.php?action=me');
+        const data = await res.json();
+        if (!data.success) {
+            window.location.href = 'login.html';
+            return;
+        }
+        const name = data.user.firstName?.trim() || data.user.email.split('@')[0];
+        document.getElementById('user-name').textContent = name;
+        loadWorkouts();
+    } catch (_) {
+        window.location.href = 'login.html';
+    }
+});
+
+async function logout() {
+    await fetch('api/auth.php?action=logout', { method: 'POST' });
+    window.location.href = 'login.html';
+}
+
+function switchTab(tab) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+    document.getElementById(tab).classList.add('active');
+    event.target.classList.add('active');
+}
+
+// Predefined routines
+const routines = {
+    fullbody3: {
+        name: 'Full Body 3x/week',
+        type: 'Full Body',
+        exercises: [
+            { name: 'Squat', sets: 4, reps: '4-6', notes: 'Main movement - max intensity' },
+            { name: 'Bench Press', sets: 4, reps: '4-6', notes: 'Primary push' },
+            { name: 'Deadlift', sets: 3, reps: '4-6', notes: 'Back & total body' },
+            { name: 'Barbell Row', sets: 3, reps: '6-8', notes: 'Secondary back' },
+            { name: 'Leg Press', sets: 3, reps: '8-10', notes: 'Secondary legs' },
+            { name: 'Pull-ups', sets: 3, reps: '6-10', notes: 'Vertical pull' }
+        ],
+        duration: 60,
+        intensity: 'Maxim'
+    },
+    'upper-lower': {
+        name: 'Upper/Lower 4x/week',
+        type: 'Upper/Lower Split',
+        exercises: [
+            { name: 'Bench Press', sets: 4, reps: '4-6', notes: 'Upper A - Chest' },
+            { name: 'Incline Press', sets: 3, reps: '6-8', notes: 'Secondary chest' },
+            { name: 'Lat Pulldown', sets: 4, reps: '6-8', notes: 'Upper B - Back' },
+            { name: 'Barbell Row', sets: 4, reps: '4-6', notes: 'Primary back' },
+            { name: 'Squat', sets: 4, reps: '4-6', notes: 'Lower A - Legs' },
+            { name: 'Leg Press', sets: 3, reps: '8-10', notes: 'Secondary legs' },
+            { name: 'Deadlift', sets: 3, reps: '4-6', notes: 'Lower B - Back chain' }
+        ],
+        duration: 60,
+        intensity: 'Maxim'
+    },
+    'chest-back': {
+        name: 'Chest/Back Focus',
+        type: 'Chest/Back Specialization',
+        exercises: [
+            { name: 'Bench Press', sets: 5, reps: '4-6', notes: 'Main - Max intensity' },
+            { name: 'Incline Dumbbell Press', sets: 3, reps: '6-8', notes: 'Upper chest' },
+            { name: 'Dips', sets: 3, reps: '6-10', notes: 'Chest & triceps' },
+            { name: 'Pec Deck', sets: 2, reps: '8-12', notes: 'Isolation' },
+            { name: 'Barbell Row', sets: 5, reps: '4-6', notes: 'Main back' },
+            { name: 'Lat Pulldown', sets: 3, reps: '6-8', notes: 'Vertical pull' },
+            { name: 'Machine Row', sets: 3, reps: '8-10', notes: 'Secondary' }
+        ],
+        duration: 70,
+        intensity: 'Maxim'
+    },
+    beginner: {
+        name: 'Beginner Full Body',
+        type: 'Full Body Beginner',
+        exercises: [
+            { name: 'Barbell Squat', sets: 3, reps: '6-8', notes: 'Legs - form important' },
+            { name: 'Barbell Bench Press', sets: 3, reps: '6-8', notes: 'Chest - learn form' },
+            { name: 'Barbell Deadlift', sets: 2, reps: '6-8', notes: 'Back - form first' },
+            { name: 'Barbell Bent-Over Row', sets: 3, reps: '6-8', notes: 'Back secondary' },
+            { name: 'Pull-ups assisted', sets: 3, reps: '8-12', notes: 'Back/arms' },
+            { name: 'Dumbbell Curls', sets: 2, reps: '8-10', notes: 'Arms' }
+        ],
+        duration: 50,
+        intensity: 'Înalt'
+    }
+};
+
+let tempExercises = [];
+let editingWorkoutId = null;
+
+// Convertit intensity din text la numeric
+function getIntensityValue(intensityText) {
+    const map = { 'Maxim': 10, 'Înalt': 8, 'Mediu': 5, 'Ușor': 3 };
+    return map[intensityText] || 5;
+}
+
+function loadRoutine(routineKey) {
+    const routine = routines[routineKey];
+    if (!routine) return;
+
+    // Clear temp exercises și editingWorkoutId
+    tempExercises = JSON.parse(JSON.stringify(routine.exercises));
+    editingWorkoutId = null;
+
+    // Auto-fill form
+    document.getElementById('workout-name').value = routine.name;
+    document.getElementById('workout-duration').value = routine.duration;
+    document.getElementById('workout-intensity').value = routine.intensity;
+
+    // Switch to custom tab
+    document.getElementById('custom').classList.add('active');
+    document.getElementById('routines').classList.remove('active');
+    document.getElementById('manage').classList.remove('active');
+    document.querySelectorAll('.tab-btn')[1].classList.add('active');
+    document.querySelectorAll('.tab-btn')[0].classList.remove('active');
+
+    updateExercisesList();
+    showMessage('Rutina încărcată! Poți salva direct sau adăuga exerciții suplimentare.');
+}
+
+function addExercise() {
+    const name = document.getElementById('exercise-name').value.trim();
+    const sets = document.getElementById('exercise-sets').value;
+    const reps = document.getElementById('exercise-reps').value.trim();
+    const notes = document.getElementById('exercise-notes').value.trim();
+
+    if (!name) {
+        showMessage('Adaugă numele al exercițiului!', 'error');
+        return;
+    }
+
+    tempExercises.push({ name, sets: parseInt(sets), reps, notes });
+
+    // Clear form
+    document.getElementById('exercise-name').value = '';
+    document.getElementById('exercise-sets').value = '3';
+    document.getElementById('exercise-reps').value = '';
+    document.getElementById('exercise-notes').value = '';
+
+    updateExercisesList();
+    showMessage(`"${name}" adăugat!`);
+}
+
+function updateExercisesList() {
+    const list = document.getElementById('exercises-list');
+    if (tempExercises.length === 0) {
+        list.innerHTML = '<p style="color: var(--chalk-dim);">Niciun exercițiu adăugat. Pornește cu rutina prestabilită sau adaugă manual.</p>';
+        return;
+    }
+
+    list.innerHTML = tempExercises.map((ex, idx) => `
+        <div class="exercise-item">
+            <div class="exercise-info">
+                <h4>${ex.name}</h4>
+                <p><strong>${ex.sets} × ${ex.reps}</strong> reps</p>
+                ${ex.notes ? `<p>${ex.notes}</p>` : ''}
+            </div>
+            <button type="button" class="exercise-remove" onclick="removeExercise(${idx});">Șterge</button>
+        </div>
+    `).join('');
+}
+
+function removeExercise(idx) {
+    tempExercises.splice(idx, 1);
+    updateExercisesList();
+}
+
+// SALVARE ÎN DB
+async function saveWorkout(event) {
+    event.preventDefault();
+
+    if (tempExercises.length === 0) {
+        showMessage('Adaugă cel puțin un exercițiu!', 'error');
+        return;
+    }
+
+    const name = document.getElementById('workout-name').value.trim();
+    const duration = parseInt(document.getElementById('workout-duration').value);
+    const intensity = getIntensityValue(document.getElementById('workout-intensity').value);
+    const notes = document.getElementById('workout-notes').value.trim();
+
+    if (!name || !duration) {
+        showMessage('Completează numele și durata!', 'error');
+        return;
+    }
+
+    // Formatare exerciții ca JSON string
+    const exercisesStr = JSON.stringify(tempExercises);
+
+    // Data curentă în format YYYY-MM-DD
+    const today = new Date().toISOString().split('T')[0];
+
+    try {
+        // Dacă editez, șterge-o pe cea veche și creează o nouă
+        if (editingWorkoutId) {
+            await fetch(`api/workouts.php?id=${editingWorkoutId}`, { method: 'DELETE' });
+        }
+
+        // POST nou workout
+        const res = await fetch('api/workouts.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                date: today,
+                type: name,
+                exercises: exercisesStr,
+                duration: duration,
+                intensity: intensity,
+                notes: notes
+            })
+        });
+
+        const data = await res.json();
+        if (!data.success) {
+            showMessage('Eroare la salvare: ' + (data.message || 'Necunoscut'), 'error');
+            return;
+        }
+
+        // Clear form
+        document.getElementById('workout-name').value = '';
+        document.getElementById('workout-notes').value = '';
+        tempExercises = [];
+        editingWorkoutId = null;
+        updateExercisesList();
+
+        showMessage('✓ Antrenament salvat!');
+        setTimeout(() => {
+            document.getElementById('manage').classList.add('active');
+            document.getElementById('custom').classList.remove('active');
+            document.querySelectorAll('.tab-btn')[2].classList.add('active');
+            document.querySelectorAll('.tab-btn')[1].classList.remove('active');
+            loadWorkouts();
+        }, 1000);
+    } catch (err) {
+        console.error(err);
+        showMessage('Eroare la comunicare cu serverul', 'error');
+    }
+}
+
+// CITIRE DIN DB
+async function loadWorkouts() {
+    try {
+        const res = await fetch('api/workouts.php');
+        const data = await res.json();
+
+        if (!data.success) {
+            showMessage('Eroare la citire workouts', 'error');
+            return;
+        }
+
+        const workouts = data.data || [];
+        const container = document.getElementById('workouts-container');
+
+        if (workouts.length === 0) {
+            container.innerHTML = '<p style="color: var(--chalk-dim); text-align: center; padding: 2rem;">Niciun antrenament salvat. Creează-ți primul!</p>';
+            return;
+        }
+
+        container.innerHTML = workouts.map(w => `
+            <div class="workout-item">
+                <div>
+                    <p class="workout-name">${w.type || 'Fără tip'}</p>
+                    <p class="workout-meta">
+                        Data: ${w.date} • ${w.duration} min • Intensitate: ${w.intensity}/10
+                    </p>
+                </div>
+                <div class="workout-actions">
+                    <button class="btn-small" onclick="editWorkout(${w.id});">Editează</button>
+                    <button class="btn-small" onclick="deleteWorkout(${w.id});">Șterge</button>
+                </div>
+            </div>
+        `).join('');
+    } catch (err) {
+        console.error(err);
+        showMessage('Eroare la citire workouts', 'error');
+    }
+}
+
+// ȘTERGERE DIN DB
+async function deleteWorkout(id) {
+    if (!confirm('Șterge antrenamentul?')) return;
+
+    try {
+        const res = await fetch(`api/workouts.php?id=${id}`, { method: 'DELETE' });
+        const data = await res.json();
+
+        if (!data.success) {
+            showMessage('Eroare la ștergere', 'error');
+            return;
+        }
+
+        showMessage('✓ Antrenament șters.');
+        loadWorkouts();
+    } catch (err) {
+        console.error(err);
+        showMessage('Eroare la ștergere', 'error');
+    }
+}
+
+// EDITARE - citit din DB
+async function editWorkout(id) {
+    try {
+        // Citit lista de workouts
+        const res = await fetch('api/workouts.php');
+        const data = await res.json();
+
+        if (!data.success) {
+            showMessage('Eroare la citire', 'error');
+            return;
+        }
+
+        const workout = data.data.find(w => w.id === id);
+        if (!workout) {
+            showMessage('Antrenament negăsit', 'error');
+            return;
+        }
+
+        // Parse exercises dacă e JSON string
+        let exercises = [];
+        if (typeof workout.exercises === 'string') {
+            try {
+                exercises = JSON.parse(workout.exercises);
+            } catch (e) {
+                console.warn('Nu s-a putut parsa exercises:', e);
+            }
+        } else {
+            exercises = workout.exercises || [];
+        }
+
+        // Populate form
+        document.getElementById('workout-name').value = workout.type || '';
+        document.getElementById('workout-duration').value = workout.duration || 60;
+        
+        // Convertit intensity din numeric în text
+        const intensityMap = { 10: 'Maxim', 8: 'Înalt', 5: 'Mediu', 3: 'Ușor' };
+        document.getElementById('workout-intensity').value = intensityMap[workout.intensity] || 'Mediu';
+        
+        document.getElementById('workout-notes').value = workout.notes || '';
+        tempExercises = JSON.parse(JSON.stringify(exercises));
+        editingWorkoutId = id;
+
+        updateExercisesList();
+
+        // Switch to custom tab
+        document.getElementById('custom').classList.add('active');
+        document.getElementById('manage').classList.remove('active');
+        document.querySelectorAll('.tab-btn')[1].classList.add('active');
+        document.querySelectorAll('.tab-btn')[2].classList.remove('active');
+
+        showMessage('Antrenament încărcat pentru editare.');
+    } catch (err) {
+        console.error(err);
+        showMessage('Eroare la citire antrenament', 'error');
+    }
+}
+
+function showMessage(msg, type = 'success') {
+    const container = document.getElementById('message-container');
+    const color = type === 'error' ? 'var(--rust)' : '#3daa6e';
+    container.innerHTML = `<div class="message" style="border-left-color: ${color};">${msg}</div>`;
+    setTimeout(() => { container.innerHTML = ''; }, 3000);
+}
+
+function selectRoutine(key) {
+    // Just visual feedback
+    document.querySelectorAll('.routine-card').forEach(el => el.classList.remove('selected'));
+    event.target.closest('.routine-card').classList.add('selected');
+}
+</script>
+
+</body>
+</html>

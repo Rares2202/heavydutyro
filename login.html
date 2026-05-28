@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autentificare — HeavyDutyRO</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        :root {
+            --iron: #0a0a0a;
+            --steel: #111111;
+            --forge: #1a1a1a;
+            --rust: #c8370a;
+            --rust-bright: #e84010;
+            --chalk: #f0ece4;
+            --chalk-dim: #b8b0a4;
+            --plate: #2a2a2a;
+            --error: #e84040;
+            --success: #3daa6e;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--iron);
+            color: var(--chalk);
+            font-family: 'Crimson Pro', Georgia, serif;
+            font-size: 18px;
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .auth-brand {
+            background: var(--steel);
+            border-right: 1px solid var(--plate);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-brand::before {
+            content: 'HD';
+            position: absolute;
+            bottom: -0.15em;
+            left: -0.05em;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 40vw;
+            line-height: 0.85;
+            color: rgba(255,255,255,0.025);
+            pointer-events: none;
+            max-font-size: 400px;
+        }
+
+        .auth-brand::after {
+            content: '';
+            position: absolute;
+            top: 0; right: 0;
+            width: 3px;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent, var(--rust), transparent);
+        }
+
+        .brand-logo {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2rem;
+            letter-spacing: 0.05em;
+            color: var(--chalk);
+            text-decoration: none;
+        }
+
+        .brand-logo span { color: var(--rust); }
+
+        .brand-quote {
+            position: relative;
+            z-index: 2;
+        }
+
+        .brand-quote blockquote p {
+            font-family: 'Crimson Pro', serif;
+            font-size: 1.7rem;
+            font-style: italic;
+            line-height: 1.4;
+            color: var(--chalk);
+            margin-bottom: 1rem;
+        }
+
+        .brand-quote blockquote cite {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--rust);
+            font-style: normal;
+        }
+
+        .brand-footer {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--chalk-dim);
+        }
+
+        /* ── RIGHT PANEL — FORMULARE ── */
+        /* CSS: Stilizare panou drept cu formular centrat */
+        .auth-panel {
+            background: var(--iron);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+        }
+
+        .auth-tabs {
+            display: flex;
+            width: 100%;
+            max-width: 440px;
+            margin-bottom: 2.5rem;
+            border-bottom: 1px solid var(--plate);
+        }
+
+        .auth-tab {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            color: var(--chalk-dim);
+            border-bottom: 2px solid transparent;
+            text-decoration: none;
+            transition: color 0.2s, border-color 0.2s;
+            margin-bottom: -1px;
+            background: none;
+            border: none;
+        }
+
+        .auth-tab.active {
+            color: var(--chalk);
+            border-bottom-color: var(--rust);
+        }
+
+        .auth-tab:hover {
+            color: var(--chalk);
+            background: none;
+        }
+
+        /* ── FORM STYLES ── */
+        .auth-form {
+            width: 100%;
+            max-width: 440px;
+        }
+
+        .auth-form h2 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2.8rem;
+            letter-spacing: 0.02em;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .auth-form .form-subtitle {
+            font-size: 0.95rem;
+            color: var(--chalk-dim);
+            margin-bottom: 2rem;
+        }
+
+        /* PHP: Afișare mesaje de eroare/succes din sesiune */
+        .form-message {
+            padding: 0.75rem 1rem;
+            margin-bottom: 1.5rem;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            display: none; /* PHP: Afișat dinamic când există mesaj */
+        }
+
+        .form-message.error {
+            background: rgba(232, 64, 64, 0.1);
+            border-left: 3px solid var(--error);
+            color: var(--error);
+        }
+
+        .form-message.success {
+            background: rgba(61, 170, 110, 0.1);
+            border-left: 3px solid var(--success);
+            color: var(--success);
+        }
+
+        /* ── CÂMPURI INPUT ── */
+        .field-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .field-group label {
+            display: block;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--chalk-dim);
+            margin-bottom: 0.5rem;
+        }
+
+        .field-group input {
+            width: 100%;
+            background: var(--forge);
+            border: 1px solid var(--plate);
+            color: var(--chalk);
+            font-family: 'Crimson Pro', serif;
+            font-size: 1rem;
+            padding: 0.85rem 1rem;
+            outline: none;
+            transition: border-color 0.2s, background 0.2s;
+            -webkit-appearance: none;
+        }
+
+        .field-group input::placeholder {
+            color: rgba(184, 176, 164, 0.4);
+        }
+
+        .field-group input:focus {
+            border-color: var(--rust);
+            background: var(--steel);
+        }
+
+        /* CSS: Validare vizuală input cu :valid/:invalid */
+        .field-group input:invalid:not(:placeholder-shown) {
+            border-color: var(--error);
+        }
+
+        .field-hint {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.6rem;
+            letter-spacing: 0.08em;
+            color: var(--chalk-dim);
+            margin-top: 0.4rem;
+        }
+
+        .field-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        /* ── CHECKBOX ── */
+        .field-checkbox {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .field-checkbox input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            min-width: 18px;
+            accent-color: var(--rust);
+            margin-top: 0.1rem;
+            cursor: pointer;
+        }
+
+        .field-checkbox label {
+            font-size: 0.85rem;
+            color: var(--chalk-dim);
+            line-height: 1.4;
+            cursor: pointer;
+        }
+
+        .field-checkbox label a {
+            color: var(--rust);
+            text-decoration: none;
+        }
+
+        /* ── BUTOANE ── */
+        .btn-submit {
+            width: 100%;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--iron);
+            background: var(--rust);
+            border: 2px solid var(--rust);
+            padding: 1rem 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-submit:hover {
+            background: var(--rust-bright);
+            border-color: var(--rust-bright);
+            color: var(--iron);
+            transform: scale(1.02);
+        }
+
+        .btn-submit:active {
+            transform: scale(0.98);
+        }
+
+        .form-separator {
+            text-align: center;
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-separator::before {
+            content: '';
+            position: absolute;
+            top: 50%; left: 0;
+            width: 100%; height: 1px;
+            background: var(--plate);
+        }
+
+        .form-separator span {
+            position: relative;
+            background: var(--iron);
+            padding: 0 1rem;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--chalk-dim);
+        }
+
+        .form-link {
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--chalk-dim);
+        }
+
+        .form-link a {
+            color: var(--rust);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .form-link a:hover { color: var(--rust-bright); }
+
+        /* ── SECȚIUNE RECUPERARE PAROLĂ ── */
+        .forgot-link {
+            text-align: right;
+            margin-top: -0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .forgot-link a {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.1em;
+            color: var(--chalk-dim);
+            text-decoration: none;
+            text-transform: uppercase;
+            transition: color 0.2s;
+        }
+
+        .forgot-link a:hover { color: var(--rust); }
+
+        /* ── STRENGTH INDICATOR ── */
+        .password-strength {
+            height: 3px;
+            background: var(--plate);
+            margin-top: 0.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .password-strength-bar {
+            height: 100%;
+            width: 0%;
+            background: var(--rust);
+            transition: width 0.3s;
+            /* JavaScript: Actualizat dinamic în funcție de puterea parolei */
+        }
+
+        /* ── REGISTER SECTION ── */
+        /* CSS: Stilizare secțiune înregistrare separată */
+        #register {
+            display: none; /* JavaScript: Toggled la click pe tab */
+        }
+
+        select {
+            width: 100%;
+            background: var(--forge);
+            border: 1px solid var(--plate);
+            color: var(--chalk);
+            font-family: 'Crimson Pro', serif;
+            font-size: 1rem;
+            padding: 0.85rem 1rem;
+            outline: none;
+            transition: border-color 0.2s, background 0.2s;
+            -webkit-appearance: none;
+        }
+
+        select:focus {
+            border-color: var(--rust);
+            background: var(--steel);
+        }
+    </style>
+</head>
+<body>
+
+<!-- ── PANOU STÂNG — BRANDING ── -->
+<!-- CSS: Stilizare panou branding lateral -->
+<aside class="auth-brand">
+    <a href="index.html" class="brand-logo">Heavy<span>Duty</span>RO</a>
+
+    <div class="brand-quote">
+        <blockquote>
+            <p>
+                „Intensitatea este singurul factor care determină
+                dacă un mușchi crește sau stagnează."
+            </p>
+            <cite>— Mike Mentzer</cite>
+        </blockquote>
+    </div>
+
+    <p class="brand-footer">Heavy Duty Training · Filosofia Mentzer</p>
+</aside>
+
+<!-- ── PANOU DREPT — AUTENTIFICARE / ÎNREGISTRARE ── -->
+<main class="auth-panel">
+
+    <!-- Tab-uri navigare Login / Înregistrare -->
+    <div class="auth-tabs">
+        <button class="auth-tab active" data-tab="login" onclick="switchTab('login', event)">Autentificare</button>
+        <button class="auth-tab" data-tab="register" onclick="switchTab('register', event)">Înregistrare</button>
+    </div>
+
+    <!-- FORMULAR LOGIN -->
+    <section id="login" class="auth-form" style="display: block;">
+        <h2>Bun venit!</h2>
+        <p class="form-subtitle">Autentifică-te pentru a accesa planul tău Heavy Duty.</p>
+
+        <div class="form-message error" id="login-error-msg"></div>
+
+        <form onsubmit="handleLogin(event)">
+            <input type="hidden" name="action" value="login">
+
+            <!-- Email -->
+            <div class="field-group">
+                <label for="login_email">Adresă Email</label>
+                <input
+                    type="email"
+                    id="login_email"
+                    name="login_email"
+                    placeholder="exemplu@email.ro"
+                    autocomplete="email"
+                    required
+                >
+            </div>
+
+            <!-- Parolă -->
+            <div class="field-group">
+                <label for="login_password">Parolă</label>
+                <input
+                    type="password"
+                    id="login_password"
+                    name="login_password"
+                    placeholder="••••••••"
+                    autocomplete="current-password"
+                    required
+                >
+            </div>
+
+            <!-- Link recuperare parolă -->
+            <div class="forgot-link">
+                <a href="#" onclick="alert('Funcție de recuperare parolă');return false;">Ai uitat parola?</a>
+            </div>
+
+            <!-- Ține-mă minte -->
+            <div class="field-checkbox">
+                <input type="checkbox" id="login_remember" name="login_remember" value="1">
+                <label for="login_remember">Ține-mă autentificat pe acest dispozitiv</label>
+            </div>
+
+            <!-- Submit -->
+            <button type="submit" class="btn-submit">
+                Autentificare
+            </button>
+        </form>
+
+        <p class="form-link">
+            Nu ai cont? <a class="auth-tab" style="cursor:pointer;" onclick="switchTab('register', event)">Înregistrează-te gratuit →</a>
+        </p>
+    </section>
+
+    <!-- FORMULAR ÎNREGISTRARE -->
+    <section id="register" class="auth-form" style="display: none;">
+        <h2>Alătură-te</h2>
+        <p class="form-subtitle">Creează-ți contul și începe antrenamentul Heavy Duty.</p>
+
+        <div class="form-message error" id="register-error-msg"></div>
+        <div class="form-message success" id="register-success-msg"></div>
+
+        <form onsubmit="handleRegister(event)">
+            <input type="hidden" name="action" value="register">
+
+            <!-- Nume + Prenume -->
+            <div class="field-row">
+                <div class="field-group">
+                    <label for="reg_firstname">Prenume</label>
+                    <input
+                        type="text"
+                        id="reg_firstname"
+                        name="reg_firstname"
+                        placeholder="Ion"
+                        autocomplete="given-name"
+                        required
+                        minlength="2"
+                        maxlength="50"
+                    >
+                </div>
+                <div class="field-group">
+                    <label for="reg_lastname">Nume de Familie</label>
+                    <input
+                        type="text"
+                        id="reg_lastname"
+                        name="reg_lastname"
+                        placeholder="Popescu"
+                        autocomplete="family-name"
+                        required
+                        minlength="2"
+                        maxlength="50"
+                    >
+                </div>
+            </div>
+
+            <!-- Email -->
+            <div class="field-group">
+                <label for="reg_email">Adresă Email</label>
+                <input
+                    type="email"
+                    id="reg_email"
+                    name="reg_email"
+                    placeholder="exemplu@email.ro"
+                    autocomplete="email"
+                    required
+                >
+            </div>
+
+            <!-- Parolă -->
+            <div class="field-group">
+                <label for="reg_password">Parolă</label>
+                <input
+                    type="password"
+                    id="reg_password"
+                    name="reg_password"
+                    placeholder="Minim 8 caractere"
+                    autocomplete="new-password"
+                    required
+                    minlength="8"
+                    oninput="updatePasswordStrength(this.value)"
+                >
+                <div class="password-strength">
+                    <div class="password-strength-bar" id="pwd-strength-bar"></div>
+                </div>
+                <p class="field-hint">Minim 8 caractere, o majusculă, o cifră.</p>
+            </div>
+
+            <!-- Confirmare Parolă -->
+            <div class="field-group">
+                <label for="reg_password_confirm">Confirmă Parola</label>
+                <input
+                    type="password"
+                    id="reg_password_confirm"
+                    name="reg_password_confirm"
+                    placeholder="Repetă parola"
+                    autocomplete="new-password"
+                    required
+                >
+            </div>
+
+            <!-- Nivel experiență -->
+            <div class="field-group">
+                <label for="reg_experience">Nivel de Experiență</label>
+                <select id="reg_experience" name="reg_experience" required>
+                    <option value="">— Selectează nivelul —</option>
+                    <option value="incepator">Începător (0–1 an)</option>
+                    <option value="intermediar">Intermediar (1–3 ani)</option>
+                    <option value="avansat">Avansat (3+ ani)</option>
+                </select>
+            </div>
+
+            <!-- Acord termeni -->
+            <div class="field-checkbox">
+                <input type="checkbox" id="reg_terms" name="reg_terms" value="1" required>
+                <label for="reg_terms">
+                    Am citit și sunt de acord cu Termenii și Condițiile și Politica de Confidențialitate.
+                </label>
+            </div>
+
+            <!-- Newsletter opțional -->
+            <div class="field-checkbox">
+                <input type="checkbox" id="reg_newsletter" name="reg_newsletter" value="1" checked>
+                <label for="reg_newsletter">
+                    Vreau să primesc sfaturi Heavy Duty și actualizări pe email.
+                </label>
+            </div>
+
+            <!-- Submit -->
+            <button type="submit" class="btn-submit">
+                Creează Cont Gratuit
+            </button>
+        </form>
+
+        <p class="form-link">
+            Ai deja cont? <a style="cursor:pointer;" onclick="switchTab('login', event)">← Autentifică-te</a>
+        </p>
+    </section>
+
+</main>
+
+
+<script>
+    // ── Redirecționare dacă deja logat ──────────────────
+    (async function () {
+        try {
+            const res  = await fetch('api/auth.php?action=me');
+            const data = await res.json();
+            if (data.success) window.location.href = 'dashboard.html';
+        } catch (_) { /* continuă */ }
+    })();
+
+    // ── Tab switching ────────────────────────────────────
+    function switchTab(tabName, event) {
+        event.preventDefault();
+        document.querySelectorAll('.auth-form').forEach(f => f.style.display = 'none');
+        document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+        document.getElementById(tabName).style.display = 'block';
+        event.target.classList.add('active');
+    }
+
+    // ── Indicator putere parolă ──────────────────────────
+    function updatePasswordStrength(password) {
+        const bar = document.getElementById('pwd-strength-bar');
+        let strength = 0;
+        if (password.length >= 8)           strength += 25;
+        if (/[A-Z]/.test(password))         strength += 25;
+        if (/[0-9]/.test(password))         strength += 25;
+        if (/[^A-Za-z0-9]/.test(password))  strength += 25;
+        bar.style.width = strength + '%';
+        bar.style.background = strength <= 25 ? 'var(--rust)' : strength <= 50 ? 'var(--warning)' : 'var(--success)';
+    }
+
+    // ── Afișare mesaj ────────────────────────────────────
+    function showMessage(id, msg, type) {
+        const el = document.getElementById(id);
+        el.textContent = msg;
+        el.className   = 'form-message show ' + type;
+        if (type === 'error') {
+            setTimeout(() => el.classList.remove('show'), 5000);
+        }
+    }
+
+    // ── LOGIN ────────────────────────────────────────────
+    async function handleLogin(event) {
+        event.preventDefault();
+        const email    = document.getElementById('login_email').value.trim();
+        const password = document.getElementById('login_password').value;
+
+        if (!email || !password) {
+            showMessage('login-error-msg', 'Completează toate câmpurile!', 'error');
+            return;
+        }
+
+        const btn = event.target.querySelector('button[type="submit"]');
+        btn.disabled    = true;
+        btn.textContent = 'Se conectează...';
+
+        try {
+            const res  = await fetch('api/auth.php?action=login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body:    JSON.stringify({ email, password }),
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                showMessage('login-error-msg', 'Conectare reușită! Redirecționare...', 'success');
+                setTimeout(() => window.location.href = 'dashboard.html', 1000);
+            } else {
+                showMessage('login-error-msg', data.message || 'Eroare autentificare', 'error');
+                btn.disabled    = false;
+                btn.textContent = 'Autentificare';
+            }
+        } catch (err) {
+            showMessage('login-error-msg', 'Eroare de rețea. Verifică serverul WAMP.', 'error');
+            btn.disabled    = false;
+            btn.textContent = 'Autentificare';
+        }
+    }
+
+    // ── REGISTER ─────────────────────────────────────────
+    async function handleRegister(event) {
+        event.preventDefault();
+        const firstName  = document.getElementById('reg_firstname').value.trim();
+        const lastName   = document.getElementById('reg_lastname').value.trim();
+        const email      = document.getElementById('reg_email').value.trim();
+        const password   = document.getElementById('reg_password').value;
+        const confirm    = document.getElementById('reg_password_confirm').value;
+        const experience = document.getElementById('reg_experience').value;
+        const newsletter = document.getElementById('reg_newsletter').checked ? 1 : 0;
+
+        if (!firstName || !lastName || !email || !password || !confirm || !experience) {
+            showMessage('register-error-msg', 'Completează toate câmpurile!', 'error');
+            return;
+        }
+        if (password !== confirm) {
+            showMessage('register-error-msg', 'Parolele nu se potrivesc!', 'error');
+            return;
+        }
+        if (password.length < 8) {
+            showMessage('register-error-msg', 'Parola trebuie să aibă minim 8 caractere!', 'error');
+            return;
+        }
+
+        const btn = event.target.querySelector('button[type="submit"]');
+        btn.disabled    = true;
+        btn.textContent = 'Se creează...';
+
+        try {
+            const res  = await fetch('api/auth.php?action=register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body:    JSON.stringify({ firstName, lastName, email, password, experience, newsletter }),
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                showMessage('register-success-msg', 'Cont creat cu succes! Redirecționare...', 'success');
+                setTimeout(() => window.location.href = 'dashboard.html', 1200);
+            } else {
+                showMessage('register-error-msg', data.message || 'Eroare înregistrare', 'error');
+                btn.disabled    = false;
+                btn.textContent = 'Creează Cont Gratuit';
+            }
+        } catch (err) {
+            showMessage('register-error-msg', 'Eroare de rețea. Verifică serverul WAMP.', 'error');
+            btn.disabled    = false;
+            btn.textContent = 'Creează Cont Gratuit';
+        }
+    }
+</script>
+</html>

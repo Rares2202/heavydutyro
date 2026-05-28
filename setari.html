@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setări — HeavyDutyRO</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+    <a href="index.html" class="topbar-logo">Heavy<span>Duty</span>RO</a>
+    <div class="topbar-right">
+        <span class="topbar-user">Bun venit, <strong id="user-name">Utilizator</strong></span>
+        <a href="#" onclick="logout(); return false;" class="topbar-logout">Ieșire</a>
+    </div>
+</header>
+
+<nav class="sidebar">
+    <span class="sidebar-section-label">General</span>
+    <a href="dashboard.html" class="sidebar-link">
+         Tablou de Bord
+    </a>
+    <a href="workout-planner.html" class="sidebar-link">
+    Planificator
+    </a>
+    <a href="body-fat-estimator.html" class="sidebar-link">
+       Estimare Grăsime
+    </a>
+
+    <span class="sidebar-section-label">Progres</span>
+    <a href="grafic-progres.html" class="sidebar-link">
+        Grafic Progres
+    </a>
+    <a href="jurnal-antrenament.html" class="sidebar-link">
+       Jurnal
+    </a>
+    <a href="nutritie.html" class="sidebar-link">
+         Nutriție
+    </a>
+
+    <span class="sidebar-section-label">Educație</span>
+    <a href="filosofia-mentzer.html" class="sidebar-link">
+      Filosofia Mentzer
+    </a>
+
+    <span class="sidebar-section-label">Cont</span>
+    <a href="setari.html" class="sidebar-link active">
+       Setări
+    </a>
+</nav>
+
+<main class="main-content">
+
+    <header class="page-header">
+        <p class="page-tag">Administrare Cont</p>
+        <h1>Setări Utilizator</h1>
+        <p class="page-subtitle">Profilul, securitatea și preferințele tale</p>
+    </header>
+
+    <div id="message-container"></div>
+
+    <!-- SECȚIUNEA PROFIL -->
+    <div class="card">
+        <p class="card-title"> Informații Profil</p>
+        <form id="profile-form" onsubmit="updateProfile(event)">
+            <div class="field-row">
+                <div class="field-group">
+                    <label for="profile-firstname">Prenume</label>
+                    <input type="text" id="profile-firstname" name="profile-firstname" required>
+                </div>
+                <div class="field-group">
+                    <label for="profile-lastname">Nume</label>
+                    <input type="text" id="profile-lastname" name="profile-lastname" required>
+                </div>
+            </div>
+
+            <div class="field-row">
+                <div class="field-group">
+                    <label for="profile-email">Email</label>
+                    <input type="email" id="profile-email" name="profile-email" required>
+                </div>
+                <div class="field-group">
+                    <label for="profile-experience">Experiență Training</label>
+                    <select id="profile-experience" name="profile-experience" required>
+                        <option value="">-- Alege --</option>
+                        <option value="beginner">Începător (0-1 an)</option>
+                        <option value="intermediate">Intermediar (1-3 ani)</option>
+                        <option value="advanced">Avansat (3-5 ani)</option>
+                        <option value="elite">Elite (5+ ani)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="field-row">
+                <div class="field-group">
+                    <label for="profile-age">Vârstă</label>
+                    <input type="number" id="profile-age" name="profile-age" min="16" max="120">
+                </div>
+                <div class="field-group">
+                    <label for="profile-gender">Sex</label>
+                    <select id="profile-gender" name="profile-gender">
+                        <option value="">-- Alege --</option>
+                        <option value="male">Bărbat</option>
+                        <option value="female">Femeie</option>
+                        <option value="other">Alt</option>
+                    </select>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Salvează Modificări</button>
+        </form>
+    </div>
+
+    <!-- SECȚIUNEA SECURITATE -->
+    <div class="card">
+        <p class="card-title"> Schimbare Parolă</p>
+        <form id="password-form" onsubmit="changePassword(event)">
+            <div class="field-group">
+                <label for="old-password">Parola Actuală</label>
+                <input type="password" id="old-password" name="old-password" required>
+            </div>
+
+            <div class="field-group">
+                <label for="new-password">Parolă Nouă</label>
+                <input type="password" id="new-password" name="new-password" required>
+                <p id="password-strength" style="margin-top: 0.5rem; font-size: 0.85rem;">Puterea parolei: <span style="color: var(--chalk-dim);">--</span></p>
+            </div>
+
+            <div class="field-group">
+                <label for="confirm-password">Confirmă Parolă Nouă</label>
+                <input type="password" id="confirm-password" name="confirm-password" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Schimbă Parolă</button>
+        </form>
+    </div>
+
+    <!-- SECȚIUNEA PREFERINȚE -->
+    <div class="card">
+        <p class="card-title"> Preferințe Aplicație</p>
+        <form id="preferences-form" onsubmit="updatePreferences(event)">
+            <div class="field-group">
+                <label for="pref-theme">Temă Visual</label>
+                <select id="pref-theme" name="pref-theme">
+                    <option value="dark">Întuneric (Dark) — Implicit</option>
+                    <option value="dark">Gri Metalic</option>
+                    <option value="dark">Negru Profund</option>
+                </select>
+            </div>
+
+            <div class="field-group">
+                <label for="pref-notifications">Notificări</label>
+                <select id="pref-notifications" name="pref-notifications">
+                    <option value="all">Toate notificările</option>
+                    <option value="important">Doar importante</option>
+                    <option value="none">Niciuna</option>
+                </select>
+            </div>
+
+            <div class="field-group">
+                <label for="pref-workout-reminder">Reamintitor Antrenament (ore de la miezul nopții)</label>
+                <input type="number" id="pref-workout-reminder" name="pref-workout-reminder" min="0" max="23" value="9" placeholder="9">
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: flex; align-items: center; cursor: pointer;">
+                    <input type="checkbox" id="pref-metrics" name="pref-metrics" checked>
+                    <span style="margin-left: 0.75rem; color: var(--chalk);">Colectare date anonim (Ajută la îmbunătățiri)</span>
+                </label>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Salvează Preferințe</button>
+        </form>
+    </div>
+
+    <!-- SECȚIUNEA ACTIVITATE -->
+    <div class="card">
+        <p class="card-title"> Activitate & Date</p>
+        <div style="line-height: 1.8;">
+            <p>
+                <strong>Cont creat la:</strong> 
+                <span id="account-created" style="color: var(--chalk-dim);">--</span>
+            </p>
+            <p>
+                <strong>Ultima autentificare:</strong> 
+                <span id="last-login" style="color: var(--chalk-dim);">Tocmai acum</span>
+            </p>
+            <p>
+                <strong>Antrenamente înregistrate:</strong> 
+                <span id="workout-count" style="color: var(--chalk-dim);">--</span>
+            </p>
+            <p>
+                <strong>Măsurători salvate:</strong> 
+                <span id="measurement-count" style="color: var(--chalk-dim);">--</span>
+            </p>
+        </div>
+    </div>
+
+    <!-- SECȚIUNEA GESTIONARE DATE -->
+    <div class="card" style="border-left: 3px solid var(--warning);">
+        <p class="card-title"> Gestionare Date</p>
+        <p style="color: var(--chalk-dim); margin-bottom: 1.5rem;">
+            Aceste acțiuni sunt permanente și nu pot fi anulate.
+        </p>
+        <div class="field-row">
+            <button class="btn btn-secondary" onclick="exportData()"> Export Date (JSON)</button>
+            <button class="btn btn-secondary" onclick="clearAllData()"> Ștergere Date Locale</button>
+        </div>
+    </div>
+
+    <!-- SECȚIUNEA DECONECTARE -->
+    <div class="card">
+        <p class="card-title"> Sesiune</p>
+        <button class="btn btn-secondary" onclick="logout()">Deconectare</button>
+    </div>
+
+</main>
+
+<script>
+async function logout() {
+    await fetch('api/auth.php?action=logout', { method: 'POST' });
+    window.location.href = 'login.html';
+}
+
+(async function () {
+    try {
+        const res  = await fetch('api/auth.php?action=me');
+        const data = await res.json();
+        if (!data.success) { window.location.href = 'login.html'; return; }
+        const name = data.user.firstName?.trim() || data.user.email.split('@')[0];
+        const el = document.getElementById('user-name');
+        if (el) el.textContent = name;
+    } catch (_) { window.location.href = 'login.html'; }
+})();
+</script>
+
+</body>
+</html>

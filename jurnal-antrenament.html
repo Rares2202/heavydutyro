@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jurnal Antrenament — HeavyDutyRO</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+    <a href="index.html" class="topbar-logo">Heavy<span>Duty</span>RO</a>
+    <div class="topbar-right">
+        <span class="topbar-user">Bun venit, <strong id="user-name">Utilizator</strong></span>
+        <a href="#" onclick="logout(); return false;" class="topbar-logout">Ieșire</a>
+    </div>
+</header>
+
+<nav class="sidebar">
+    <span class="sidebar-section-label">General</span>
+    <a href="dashboard.html" class="sidebar-link">
+       Tablou de Bord
+    </a>
+    <a href="workout-planner.html" class="sidebar-link">
+         Planificator
+    </a>
+    <a href="body-fat-estimator.html" class="sidebar-link">
+      Estimare Grăsime
+    </a>
+
+    <span class="sidebar-section-label">Progres</span>
+    <a href="grafic-progres.html" class="sidebar-link">
+      Grafic Progres
+    </a>
+    <a href="jurnal-antrenament.html" class="sidebar-link active">
+         Jurnal
+    </a>
+    <a href="nutritie.html" class="sidebar-link">
+      Nutriție
+    </a>
+
+    <span class="sidebar-section-label">Educație</span>
+    <a href="filosofia-mentzer.html" class="sidebar-link">
+     Filosofia Mentzer
+    </a>
+
+    <span class="sidebar-section-label">Cont</span>
+    <a href="setari.html" class="sidebar-link">
+      Setări
+    </a>
+</nav>
+
+<main class="main-content">
+
+    <header class="page-header">
+        <p class="page-tag">Înregistrare Antrenamente</p>
+        <h1>Jurnal Antrenament</h1>
+        <p class="page-subtitle">Toate antrenamentele tale, organizate pe dată și exercițiu</p>
+    </header>
+
+    <div class="info-bar">
+        <p>
+            <strong>Heavy Duty Training:</strong> Fiecare antrenament e o oportunitate de a progresa. 
+            Înregistrează-ți greutățile, seturile și observațiile pentru a vedea evoluția pe termen lung.
+        </p>
+    </div>
+
+    <!-- FILTRI & CĂUTARE -->
+    <div class="card">
+        <div class="field-row" style="margin-bottom: 1rem;">
+            <div class="field-group">
+                <label for="filter-month">Filtrează pe lună</label>
+                <select id="filter-month">
+                    <option value="">Toate lunile</option>
+                    <option value="0">Ianuarie</option>
+                    <option value="1">Februarie</option>
+                    <option value="2">Martie</option>
+                    <option value="3">Aprilie</option>
+                    <option value="4">Mai</option>
+                    <option value="5">Iunie</option>
+                </select>
+            </div>
+            <div class="field-group">
+                <label for="filter-exercise">Filtrează pe exercițiu</label>
+                <input type="text" id="filter-exercise" placeholder="Ex: Bench Press...">
+            </div>
+            <div style="display: flex; align-items: flex-end;">
+                <button class="btn btn-secondary" onclick="resetFilters()">Resetează Filtru</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ISTORIC ANTRENAMENTE -->
+    <div id="workouts-container">
+        <!-- Antrenamente vor fi populate din API -->
+    </div>
+
+</main>
+
+<script>
+async function logout() {
+    await fetch('api/auth.php?action=logout', { method: 'POST' });
+    window.location.href = 'login.html';
+}
+
+function resetFilters() {
+    document.getElementById('filter-month').value    = '';
+    document.getElementById('filter-exercise').value = '';
+    loadWorkouts();
+}
+
+function parseExercises(value) {
+    if (!value) return [];
+
+    if (typeof value === 'string') {
+        try {
+            const parsed = JSON.parse(value);
+            if (Array.isArray(parsed)) return parsed;
+        } catch (_) {
+            return value.split(',').map(item => item.trim()).filter(Boolean);
+        }
+    }
+    if (Array.isArray(value)) return value;
+    return [value];
+}
+
+function renderExercises(value) {
+    const exercises = parseExercises(value);
+    return exercises.map(ex => {
+        if (typeof ex === 'object' && ex !== null) {
+            return `<li>${escapeHtml(ex.name || '')}${ex.sets ? ` — ${escapeHtml(String(ex.sets))} seturi` : ''}${ex.reps ? `, ${escapeHtml(ex.reps)}` : ''}${ex.notes ? ` (${escapeHtml(ex.notes)})` : ''}</li>`;
+        }
+        return `<li>${escapeHtml(String(ex))}</li>`;
+    }).join('');
+}
+
+function escapeHtml(text) {
+    return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+async function loadWorkouts(filterMonth = '', filterExercise = '') {
+    const container = document.getElementById('workouts-container');
+    container.innerHTML = '<div class="card"><p style="color:var(--chalk-dim);text-align:center">Se încarcă...</p></div>';
+
+    try {
+        const res  = await fetch('api/workouts.php');
+        const data = await res.json();
+        if (!data.success) {
+            container.innerHTML = '<div class="card"><p style="color:var(--chalk-dim);text-align:center">Nu am putut încărca antrenamentele.</p></div>';
+            return;
+        }
+
+        let workouts = data.data || [];
+
+        if (filterMonth !== '') {
+            workouts = workouts.filter(w => new Date(w.date).getMonth() === parseInt(filterMonth));
+        }
+        if (filterExercise.trim()) {
+            const q = filterExercise.trim().toLowerCase();
+            workouts = workouts.filter(w => {
+                const values = [w.type || '', ...parseExercises(w.exercises).map(ex => typeof ex === 'object' ? ex.name : ex)].map(v => String(v).toLowerCase());
+                return values.some(v => v.includes(q));
+            });
+        }
+
+        if (workouts.length === 0) {
+            container.innerHTML = '<div class="card"><p style="color:var(--chalk-dim);text-align:center">Niciun antrenament găsit.</p></div>';
+            return;
+        }
+
+        container.innerHTML = workouts.map(w => {
+            const dateFmt = new Date(w.date).toLocaleDateString('ro-RO', {day:'2-digit',month:'long',year:'numeric'});
+            const exerciseHtml = renderExercises(w.exercises);
+            return `<div class="card" style="margin-bottom:1rem;">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem;flex-wrap:wrap;gap:1rem;">
+                    <div>
+                        <p class="card-title" style="margin-bottom:.25rem">${escapeHtml(dateFmt)} — ${escapeHtml(w.type || 'Antrenament')}</p>
+                        <p style="color:var(--chalk-dim);font-size:.9rem;margin:0">Durata: ${escapeHtml(String(w.duration))} min · Intensitate: ${escapeHtml(String(w.intensity))}/10</p>
+                    </div>
+                    <button class="btn btn-small" onclick="deleteWorkout(${w.id})" style="border-color:var(--rust);color:var(--rust);white-space:nowrap">Șterge</button>
+                </div>
+                <div style="margin-bottom:1rem">
+                    <p style="font-weight:bold;color:var(--chalk);margin-bottom:.5rem">Exerciții:</p>
+                    <ul style="color:var(--chalk-dim);line-height:1.8;margin:0;padding-left:1.2rem">${exerciseHtml}</ul>
+                </div>
+                <div style="border-top:1px solid var(--plate);padding-top:1rem;margin-top:1rem">
+                    <p style="font-weight:bold;color:var(--chalk);margin-bottom:.5rem">Notițe:</p>
+                    <textarea id="notes-${w.id}" style="width:100%;min-height:90px;background:var(--steel);border:1px solid var(--plate);color:var(--chalk);padding:1rem;resize:vertical;">${escapeHtml(w.notes || '')}</textarea>
+                    <button class="btn btn-small" onclick="saveWorkoutNotes(${w.id})" style="margin-top:0.75rem;background:var(--rust);color:#fff;border:none;">Salvează notițe</button>
+                </div>
+            </div>`;
+        }).join('');
+    } catch (_) {
+        container.innerHTML = '<div class="card"><p style="color:var(--chalk-dim);text-align:center">Eroare la încărcarea datelor.</p></div>';
+    }
+}
+
+async function deleteWorkout(id) {
+    if (!confirm('Ștergi acest antrenament?')) return;
+    try {
+        const res  = await fetch(`api/workouts.php?id=${id}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (data.success) {
+            loadWorkouts(document.getElementById('filter-month').value, document.getElementById('filter-exercise').value);
+        } else {
+            alert(data.message);
+        }
+    } catch (_) { alert('Eroare rețea.'); }
+}
+
+async function saveWorkoutNotes(id) {
+    const textarea = document.getElementById(`notes-${id}`);
+    if (!textarea) return;
+    const notes = textarea.value.trim();
+
+    try {
+        const res = await fetch(`api/workouts.php?id=${id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ notes }),
+        });
+        const data = await res.json();
+        if (!data.success) {
+            alert(data.message || 'Nu am putut salva notițele.');
+        }
+    } catch (_) {
+        alert('Eroare rețea.');
+    }
+}
+
+function resetFilters() {
+    document.getElementById('filter-month').value    = '';
+    document.getElementById('filter-exercise').value = '';
+    loadWorkouts();
+}
+
+// Filtrare live
+document.getElementById('filter-exercise').addEventListener('input', function() {
+    loadWorkouts(document.getElementById('filter-month').value, this.value);
+});
+document.getElementById('filter-month').addEventListener('change', function() {
+    loadWorkouts(this.value, document.getElementById('filter-exercise').value);
+});
+
+(async function () {
+    try {
+        const res  = await fetch('api/auth.php?action=me');
+        const data = await res.json();
+        if (!data.success) { window.location.href = 'login.html'; return; }
+        const name = data.user.firstName?.trim() || data.user.email.split('@')[0];
+        document.getElementById('user-name').textContent = name;
+    } catch (_) { window.location.href = 'login.html'; return; }
+
+    await loadWorkouts();
+})();
+</script>
+
+</body>
+</html>

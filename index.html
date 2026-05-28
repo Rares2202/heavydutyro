@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HeavyDutyRO — Heavy Duty Training Tracker</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<script>
+(async function(){
+    try{
+        const r=await fetch('api/auth.php?action=me');
+        const d=await r.json();
+        if(d.success){window.location.href='dashboard.html';}
+    }catch(_){}
+})();
+</script>
+
+<header class="topbar">
+    <a href="index.html" class="topbar-logo">Heavy<span>Duty</span>RO</a>
+    <div class="topbar-right">
+        <a href="login.html" class="topbar-btn">Autentificare</a>
+    </div>
+</header>
+
+<main class="main-content" style="padding-top: 2rem;">
+
+    <!-- HERO SECTION -->
+    <section style="text-align: center; margin-bottom: 4rem;">
+        <h1 style="font-size: clamp(2rem, 5vw, 4rem); line-height: 1.2; margin-bottom: 1rem;">
+            Intensitate Maximă, Volum Minim
+        </h1>
+        <p style="font-size: 1.2rem; color: var(--chalk-dim); margin-bottom: 2rem; line-height: 1.6;">
+            Sistemul Heavy Duty Training al lui Mike Mentzer. Calculatoare, planificator și progres — 
+            în localStorage, fără backend.
+        </p>
+        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+            <a href="login.html" class="btn btn-primary">Începe Acum</a>
+            <a href="#features" class="btn btn-secondary">Citește Mai Mult</a>
+        </div>
+    </section>
+
+    <!-- FEATURES GRID -->
+    <section id="features" style="margin-bottom: 3rem;">
+        <h2 style="text-align: center; margin-bottom: 2rem; font-size: 2rem;">Funcționalități Principale</h2>
+        <div class="grid-2" style="max-width: 1200px; margin: 0 auto;">
+            
+            <div class="card">
+                <p style="font-size: 2rem; margin-bottom: 0.5rem;">📊</p>
+                <p class="card-title">Tablou de Bord</p>
+                <p style="color: var(--chalk-dim); line-height: 1.6;">
+                    Vizualizare rapidă a statisticilor: greutate, grăsime corporală, progres antrenament.
+                </p>
+            </div>
+
+            <div class="card">
+                
+                <p class="card-title">Planificator Antrenamente</p>
+                <p style="color: var(--chalk-dim); line-height: 1.6;">
+                    Creează și gestionează programe: Upper/Lower, PPL, Full Body, Chest/Back.
+                </p>
+            </div>
+
+            <div class="card">
+              
+                <p class="card-title">Estimare Grăsime Corporală</p>
+                <p style="color: var(--chalk-dim); line-height: 1.6;">
+                    Analiză vizuală pe 5 parametri. Categorie & recomandări personalizate.
+                </p>
+            </div>
+
+            <div class="card">
+              
+                <p class="card-title">Grafic Progres</p>
+                <p style="color: var(--chalk-dim); line-height: 1.6;">
+                    Urmărește evoluția greutății, grăsimii și forței pe grafice interactive.
+                </p>
+            </div>
+
+            <div class="card">
+              
+                <p class="card-title">Jurnal Antrenament</p>
+                <p style="color: var(--chalk-dim); line-height: 1.6;">
+                    Păstrează istoric al tuturor antrenamentelor. Exerciții, greutăți, note.
+                </p>
+            </div>
+
+            <div class="card">
+               
+                <p class="card-title">Calculator Nutriție</p>
+                <p style="color: var(--chalk-dim); line-height: 1.6;">
+                    Calcul calorii, macronutrienți și plan alimentar pentru Heavy Duty.
+                </p>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- INFO SECTION -->
+    <section style="background: var(--forge); border: 1px solid var(--plate); padding: 2rem; border-radius: 0; text-align: center; margin-bottom: 3rem;">
+        <h3 style="margin-bottom: 1rem;">Fără Backend, 100% Local</h3>
+        <p style="color: var(--chalk-dim); line-height: 1.8;">
+            Toastă datele sunt stocate în <strong>localStorage</strong> al browserului. 
+            Nu sunt trimise la niciun server. Doar tu ai acces la datele tale.
+        </p>
+    </section>
+
+</main>
+
+
+
+</body>
+</html>

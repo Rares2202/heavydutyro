@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filosofia Mentzer — HeavyDutyRO</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        /* Philosophy page styles */
+        .philosophy-section {
+            margin-bottom: 3rem;
+        }
+
+        .section-divider {
+            height: 1px;
+            background: var(--plate);
+            margin: 2rem 0;
+        }
+
+        .quote-block {
+            background: var(--forge);
+            border-left: 3px solid var(--rust);
+            padding: 1.75rem;
+            margin: 1.5rem 0;
+            font-size: 1rem;
+            font-style: italic;
+            color: var(--chalk);
+            line-height: 1.8;
+        }
+
+        .quote-author {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--chalk-dim);
+            margin-top: 1rem;
+            font-style: normal;
+        }
+
+        .timeline {
+            display: grid;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .timeline-item {
+            background: var(--forge);
+            border: 1px solid var(--plate);
+            padding: 1.5rem;
+            position: relative;
+            padding-left: 3.5rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 1rem;
+            top: 2rem;
+            width: 12px;
+            height: 12px;
+            background: var(--rust);
+            border-radius: 50%;
+        }
+
+        .timeline-year {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.3rem;
+            color: var(--rust);
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-content {
+            font-size: 0.95rem;
+            color: var(--chalk-dim);
+            line-height: 1.7;
+        }
+
+        .philosophy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .philosophy-card {
+            background: var(--forge);
+            border: 1px solid var(--plate);
+            padding: 1.75rem;
+        }
+
+        .philosophy-card-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.3rem;
+            color: var(--rust);
+            margin-bottom: 1rem;
+        }
+
+        .philosophy-card-content {
+            font-size: 0.9rem;
+            color: var(--chalk-dim);
+            line-height: 1.7;
+        }
+
+        .conversation {
+            background: var(--steel);
+            border: 1px solid var(--plate);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0;
+        }
+
+        .conversation-title {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.72rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--rust);
+            margin-bottom: 1rem;
+        }
+
+        .dialogue {
+            margin-bottom: 1rem;
+        }
+
+        .dialogue-speaker {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--rust);
+            margin-bottom: 0.25rem;
+        }
+
+        .dialogue-text {
+            font-size: 0.9rem;
+            color: var(--chalk-dim);
+            margin-left: 1rem;
+            padding-left: 1rem;
+            border-left: 2px solid var(--plate);
+            line-height: 1.6;
+        }
+
+        .key-principles {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .principle {
+            background: rgba(200, 55, 10, 0.1);
+            border: 1px solid var(--rust);
+            padding: 1.25rem;
+            text-align: center;
+        }
+
+        .principle-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.1rem;
+            color: var(--rust);
+            margin-bottom: 0.5rem;
+        }
+
+        .principle-desc {
+            font-size: 0.82rem;
+            color: var(--chalk-dim);
+            line-height: 1.5;
+        }
+
+        .book-reference {
+            background: var(--forge);
+            border: 1px solid var(--plate);
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .book-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.2rem;
+            color: var(--chalk);
+            margin-bottom: 0.5rem;
+        }
+
+        .book-meta {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--chalk-dim);
+            margin-bottom: 1rem;
+        }
+
+        .book-excerpt {
+            font-size: 0.9rem;
+            color: var(--chalk-dim);
+            line-height: 1.7;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--plate);
+        }
+
+        .info-highlight {
+            background: var(--forge);
+            border-left: 3px solid var(--gold);
+            padding: 1rem 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .info-highlight strong {
+            color: var(--chalk);
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="topbar">
+    <a href="index.html" class="topbar-logo">Heavy<span>Duty</span>RO</a>
+    <div class="topbar-right">
+        <span class="topbar-user">Bun venit, <strong id="user-name">Utilizator</strong></span>
+        <a href="#" onclick="logout(); return false;" class="topbar-logout">Ieșire</a>
+    </div>
+</header>
+
+<nav class="sidebar">
+    <span class="sidebar-section-label">General</span>
+    <a href="dashboard.html" class="sidebar-link">
+         Tablou de Bord
+    </a>
+    <a href="workout-planner.html" class="sidebar-link">
+      Planificator
+    </a>
+    <a href="body-fat-estimator.html" class="sidebar-link">
+        Estimare Grăsime
+    </a>
+
+    <span class="sidebar-section-label">Progres</span>
+    <a href="grafic-progres.html" class="sidebar-link">
+        Grafic Progres
+    </a>
+    <a href="jurnal-antrenament.html" class="sidebar-link">
+     Jurnal
+    </a>
+    <a href="nutritie.html" class="sidebar-link">
+      Nutriție
+    </a>
+
+    <span class="sidebar-section-label">Educație</span>
+    <a href="filosofia-mentzer.html" class="sidebar-link active">
+       Filosofia Mentzer
+    </a>
+
+    <span class="sidebar-section-label">Cont</span>
+    <a href="setari.html" class="sidebar-link">
+        Setări
+    </a>
+</nav>
+
+<main class="main-content">
+
+    <header class="page-header">
+        <p class="page-tag">Revoluția Antrenamentului</p>
+        <h1>Filosofia<br>Mike Mentzer</h1>
+        <p class="page-subtitle">Viața, ideologia și impactul "Nașului Antrenamentului Heavy Duty"</p>
+    </header>
+
+    <div class="info-bar">
+        <p>
+            <strong>Mike Mentzer (1951-2001):</strong> Vizionarul care a revoluționat culturismul modern 
+            și antrenamentul cu greutăți. De la profesionist IFBB la filozoful antrenamentului intensiv. 
+            Sistemul său, Heavy Duty, a schimbat modul în care milioane de oameni se antrenează astăzi.
+        </p>
+    </div>
+
+    <!-- VIAȚA LUI MIKE MENTZER -->
+    <section class="philosophy-section">
+        <h2 style="font-family: 'Bebas Neue', sans-serif; font-size: 2rem; margin-bottom: 1.5rem;">
+             Viața lui Mike Mentzer
+        </h2>
+
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="timeline-year">1951</div>
+                <div class="timeline-content">
+                    <strong>Nașterea unui vizionar:</strong> S-a născut pe 15 noiembrie în Lancaster, Pennsylvania. 
+                    Dintr-o familie modestă, Mike a descoperit culturismul la vârsta de 12 ani, în paginile revistelor de specialitate.
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-year">1969</div>
+                <div class="timeline-content">
+                    <strong>Primii pași spre performanță:</strong> La doar 18 ani, devine campion amator 
+                    la categoria semigrea în statul Pennsylvania, anunțând o carieră promițătoare.
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-year">1976</div>
+                <div class="timeline-content">
+                    <strong>Debutul profesional:</strong> Câștigă titlul Mr. America la profesioniști (IFBB). 
+                    Între 1976 și 1979 urmează succese notabile: Mr. Universe (1978) și clasări pe podium la Mr. Olympia.
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-year">1979-1981</div>
+                <div class="timeline-content">
+                    <strong>Anii de glorie pe scenă:</strong> Se clasează pe locul 2 la Mr. Olympia timp de trei ani consecutiv 
+                    (1979, 1980, 1981), fiind învins doar de legende precum Frank Zane și Arnold Schwarzenegger.
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-year">1980-1985</div>
+                <div class="timeline-content">
+                    <strong>Nașterea sistemului Heavy Duty:</strong> Frustrat de lipsa de logică a antrenamentului tradițional, 
+                    Mike dezvoltă propriul sistem bazat pe intensitate maximă și volum redus. Publică primele articole revoluționare în revista "Ironman".
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-year">1986</div>
+                <div class="timeline-content">
+                    <strong>Prima carte - "Heavy Duty":</strong> Lansarea volumului care avea să schimbe industria fitness-ului pentru totdeauna. 
+                    Conceptele sale (frecvență scăzută, volum minim, intensitate maximă) erau radical diferite de norma vremii.
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-year">1992</div>
+                <div class="timeline-content">
+                    <strong>"Heavy Duty II - Mind & Body":</strong> Rafinarea sistemului și aprofundarea aspectului psihologic al antrenamentului. 
+                    Mike subliniază legătura indisolubilă dintre o minte puternică și un corp puternic.
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-year">1993-2000</div>
+                <div class="timeline-content">
+                    <strong>Anii de mentorat și lupte interioare:</strong> Deși influența sa crește, Mike se confruntă cu depresie și probleme de sănătate. 
+                    Continuă să scrie și să formeze o nouă generație de antrenori și culturiști.
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-year">2001</div>
+                <div class="timeline-content">
+                    <strong>Moștenirea eternă:</strong> Mike Mentzer se stinge din viață pe 9 iunie, la vârsta de 49 de ani. 
+                    În ciuda dispariției sale premature, filosofia Heavy Duty continuă să inspire milioane de oameni din întreaga lume.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- FILOSOFIA HEAVY DUTY -->
+    <section class="philosophy-section">
+        <h2 style="font-family: 'Bebas Neue', sans-serif; font-size: 2rem; margin-bottom: 1.5rem;">
+             Esența Filosofiei Heavy Duty
+        </h2>
+
+        <div class="quote-block">
+            "Atingerea unui fizic de campion nu depinde doar de efortul fizic, ci mai ales de capacitatea de a înțelege 
+            și aplica o logică fundamentală: o minte bine formată duce la un corp puternic."
+            <div class="quote-author">— Mike Mentzer</div>
+        </div>
+
+        <p style="font-size: 1rem; color: var(--chalk-dim); line-height: 1.8; margin-bottom: 1rem;">
+            Filosofia lui Mentzer a fost mult mai mult decât o simplă metodă de antrenament. A fost o <strong>adevărată revoluție științifică și psihologică</strong> 
+            care a contestat dogmele învechite ale industriei fitness-ului din anii '80. El a privit antrenamentul ca pe o știință exactă, nu ca pe un ritual obscur.
+        </p>
+
+        <div class="philosophy-grid">
+            <div class="philosophy-card">
+                <div class="philosophy-card-title">Principiul Intensității</div>
+                <div class="philosophy-card-content">
+                    "Intensitatea, nu volumul, generează adaptarea musculară." Fiecare serie trebuie dusă până la epuizarea musculară completă. 
+                    O singură serie cu efort real valorează cât zece serii executate mediocru.
+                </div>
+            </div>
+
+            <div class="philosophy-card">
+                <div class="philosophy-card-title">Recuperarea Profundă</div>
+                <div class="philosophy-card-content">
+                    Creșterea musculară nu are loc în timpul antrenamentului, ci în repaus. Antrenamentul în exces este principalul inamic al progresului. 
+                    O pauză de 48-72 de ore între sesiunile pentru același grup muscular era o idee revoluționară în 1986.
+                </div>
+            </div>
+
+            <div class="philosophy-card">
+                <div class="philosophy-card-title">Economia Antrenamentului</div>
+                <div class="philosophy-card-content">
+                    Analiza cost-beneficiu: cât mai puțin timp petrecut în sală, cât mai multe rezultate. 
+                    De ce ai petrece 20 de ore pe săptămână antrenându-te, când 4-6 ore de efort REAL pot produce aceleași, sau chiar mai bune rezultate?
+                </div>
+            </div>
+
+            <div class="philosophy-card">
+                <div class="philosophy-card-title">Mecanica Perfectă</div>
+                <div class="philosophy-card-content">
+                    Fiecare exercițiu are o mecanică optimă care maximizează stimulul și minimizează riscul de accidentare. 
+                    O repetare executată impecabil valorează mai mult decât cinci repetări executate neglijent.
+                </div>
+            </div>
+
+            <div class="philosophy-card">
+                <div class="philosophy-card-title">Puterea Mentalității</div>
+                <div class="philosophy-card-content">
+                    "Un corp puternic necesită o minte și mai puternică." Disciplina psihologică este mai importantă decât cea fizică. 
+                    Forța mentală este cea care creează adaptări fizice durabile.
+                </div>
+            </div>
+
+            <div class="philosophy-card">
+                <div class="philosophy-card-title">Fundamente Științifice</div>
+                <div class="philosophy-card-content">
+                    Mentzer a studiat temeinic fiziologia, biomecanica și psihologia performanței. 
+                    Sistemul său se baza pe știință, nu pe mituri culturale de genul "fără durere, fără câștig".
+                </div>
+            </div>
+        </div>
+
+        <div class="info-highlight">
+            <strong>Citatul fundamental al lui Mentzer:</strong> 
+            "Majoritatea culturiștilor se antrenează prea mult și se recuperează prea puțin. 
+            Rezultatul este fie o masă musculară redusă, fie un fizic masiv, dar acoperit de un strat gros de grăsime."
+        </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- CITATE MARCANTE -->
+    <section class="philosophy-section">
+        <h2 style="font-family: 'Bebas Neue', sans-serif; font-size: 2rem; margin-bottom: 1.5rem;">
+            💬 Citate Memorabile ale lui Mike Mentzer
+        </h2>
+
+        <div class="quote-block">
+            "Performanța maximă necesită efort maxim. Dar efortul maxim susținut duce la epuizare. 
+            Cheia este să înțelegi ritmul și importanța recuperării."
+            <div class="quote-author">— Mike Mentzer</div>
+        </div>
+
+        <div class="quote-block">
+            "Concentrare. Intensitate. Intenție. Trei cuvinte care separă campionii de mediocritate."
+            <div class="quote-author">— Mike Mentzer</div>
+        </div>
+
+        <div class="quote-block">
+            "Sistemul meu nu este pentru toată lumea. Pentru a urma Heavy Duty, trebuie să fii dispus 
+            să gândești diferit și să muncești mai inteligent, nu mai mult."
+            <div class="quote-author">— Mike Mentzer</div>
+        </div>
+
+        <div class="quote-block">
+            "Am renunțat la ideea că 'mai mult este mai bine' și am descoperit că 'mai bun este mai bine'."
+            <div class="quote-author">— Mike Mentzer</div>
+        </div>
+
+        <div class="quote-block">
+            "Efortul muscular maxim pentru o perioadă scurtă, urmat de o recuperare optimă, 
+            aceasta este rețeta succesului exponențial."
+            <div class="quote-author">— Mike Mentzer</div>
+        </div>
+
+        <div class="quote-block">
+            "Trebuie să accepți că orice lucru cu adevărat valoros necesită efort intelectual. 
+            Oamenii eșuează pentru că nu cred cu adevărat că pot reuși."
+            <div class="quote-author">— Mike Mentzer</div>
+        </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- PRINCIPII CHEIE -->
+    <section class="philosophy-section">
+        <h2 style="font-family: 'Bebas Neue', sans-serif; font-size: 2ch; margin-bottom: 1.5rem;">
+             Zece Porunci ale Antrenamentului Heavy Duty
+        </h2>
+
+        <div class="key-principles">
+            <div class="principle">
+                <div class="principle-title">1. Intensitate Maximă</div>
+                <div class="principle-desc">Fiecare serie este dusă până la eșec muscular (muscular failure)</div>
+            </div>
+            <div class="principle">
+                <div class="principle-title">2. Volum Redus</div>
+                <div class="principle-desc">Maximum 4-8 serii per grup muscular pe săptămână</div>
+            </div>
+            <div class="principle">
+                <div class="principle-title">3. Recuperare Profundă</div>
+                <div class="principle-desc">48-72 de ore între sesiunile pentru același grup muscular</div>
+            </div>
+            <div class="principle">
+                <div class="principle-title">4. Frecvență Scăzută</div>
+                <div class="principle-desc">3-4 sesiuni de antrenament pe săptămână, nu mai mult</div>
+            </div>
+            <div class="principle">
+                <div class="principle-title">5. Formă Perfectă</div>
+                <div class="principle-desc">Tehnica impecabilă primează în fața greutății și vitezei</div>
+            </div>
+            <div class="principle">
+                <div class="principle-title">6. Progresie Graduală</div>
+                <div class="principle-desc">Adaugă o repetiție sau 2,5 kg la fiecare antrenament</div>
+            </div>
+            <div class="principle">
+                <div class="principle-title">7. Nutriție Inteligentă</div>
+                <div class="principle-desc">Surplus caloric moderat și aport proteic adecvat</div>
+            </div>
+            <div class="principle">
+                <div class="principle-title">8. Somn de Calitate</div>
+                <div class="principle-desc">7-9 ore de somn pe noapte (absolut esențial)</div>
+            </div>
+            <div class="principle">
+                <div class="principle-title">9. Urmărire Riguroasă</div>
+                <div class="principle-desc">Notează fiecare detaliu al fiecărui antrenament</div>
+            </div>
+            <div class="principle">
+                <div class="principle-title">10. Disciplină Mentală</div>
+                <div class="principle-desc">Mentalul domină fizicul. Atitudinea este totul.</div>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- CONVERSAȚII ȘI INFLUENȚĂ -->
+    <section class="philosophy-section">
+        <h2 style="font-family: 'Bebas Neue', sans-serif; font-size: 2rem; margin-bottom: 1.5rem;">
+             Dialoguri celebre și Influența lui Mentzer
+        </h2>
+
+        <div class="conversation">
+            <div class="conversation-title">Confrunțarea cu Arnold Schwarzenegger (1979)</div>
+            <div class="dialogue">
+                <div class="dialogue-speaker">Mike Mentzer:</div>
+                <div class="dialogue-text">
+                    "Arnold, tu faci 25-30 de serii pentru piept. Nu crezi că ai putea obține aceleași rezultate 
+                    cu un volum mai mic și o intensitate mai mare, economisind astfel timp și energie?"
+                </div>
+            </div>
+            <div class="dialogue">
+                <div class="dialogue-speaker">Arnold Schwarzenegger:</div>
+                <div class="dialogue-text">
+                    "Mike, metoda ta funcționează pentru tine pentru că ești diferit. Eu am o capacitate de recuperare superioară 
+                    și pot tolera un volum mai mare. Culturismul nu este o știință exactă — fiecare răspunde diferit la antrenament."
+                </div>
+            </div>
+            <div class="dialogue">
+                <div class="dialogue-speaker">Mike Mentzer:</div>
+                <div class="dialogue-text">
+                    "Fiziologia este însă aceeași pentru toți. Mușchiul crește doar atunci când primește un stimul adecvat și apoi se recuperează. 
+                    Chiar și tu, Arnold, ai progresa mai bine cu mai puțin volum și mai multă odihnă."
+                </div>
+            </div>
+        </div>
+
+        <div class="conversation">
+            <div class="conversation-title">Dezbaterea cu Lee Haney (anii '80)</div>
+            <div class="dialogue">
+                <div class="dialogue-speaker">Lee Haney (deținător a 8 titluri Mr. Olympia):</div>
+                <div class="dialogue-text">
+                    "Volumul este cheia succesului în culturism. Fiecare mușchi trebuie stimulat din multiple unghiuri pentru a se dezvolta armonios."
+                </div>
+            </div>
+            <div class="dialogue">
+                <div class="dialogue-speaker">Mike Mentzer (răspunsul său):</div>
+                <div class="dialogue-text">
+                    "Lee, ceea ce contează cu adevărat este stimulul, nu cantitatea de muncă. Orice depășește nevoia de stimul este ineficient și contraproductiv. 
+                    Succesul tău cu volumul mare se datorează geneticii tale de excepție, dar această abordare are un cost: accidentări cronice și o carieră mai scurtă."
+                </div>
+            </div>
+        </div>
+
+        <div class="info-highlight">
+            <strong>Influența lui Mentzer în zilele noastre:</strong> Sistemul Heavy Duty a inspirat direct sau indirect:
+            <strong>Dorian Yates</strong> (de 6 ori Mr. Olympia, care a aplicat principiile Heavy Duty cu succes uriaș), 
+            <strong>John Meadows</strong> (renumit antrenor specializat în intensitate), 
+            <strong>Kai Greene</strong> și nenumărați antrenori moderni care combină principiile lui Mentzer cu știința contemporană a datelor.
+        </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- CĂRȚI ȘI RESURSE -->
+    <section class="philosophy-section">
+        <h2 style="font-family: 'Bebas Neue', sans-serif; font-size: 2rem; margin-bottom: 1.5rem;">
+             Opera și Moștenirea Literară a lui Mike Mentzer
+        </h2>
+
+        <div class="book-reference">
+            <div class="book-title">Heavy Duty (1986)</div>
+            <div class="book-meta">Volumul I — Cartea care a rescris regulile antrenamentului</div>
+            <p style="font-size: 0.95rem; color: var(--chalk-dim); line-height: 1.7; margin-bottom: 1rem;">
+                Prima lucrare care a prezentat sistemul Heavy Duty în detaliu. Concepte revoluționare care au șocat industria:
+            </p>
+            <div class="book-excerpt">
+                "Culturistii se antrenează prea mult și se recuperează prea puțin. Rezultatul: stagnare, accidentări, epuizare și demotivare. 
+                Sistemul Heavy Duty inversează această ecuație: intensitate maximă, volum strategic și recuperare profundă = progres exponențial."
+            </div>
+        </div>
+
+        <div class="book-reference">
+            <div class="book-title">Heavy Duty II - Mind & Body (1992)</div>
+            <div class="book-meta">Volumul II — Psihologia performanței și rafinarea metodei</div>
+            <p style="font-size: 0.95rem; color: var(--chalk-dim); line-height: 1.7; margin-bottom: 1rem;">
+                O incursiune profundă în mecanica antrenamentului și, mai ales, în psihologia performanței de vârf:
+            </p>
+            <div class="book-excerpt">
+                "O minte puternică construiește corpuri puternice. Psihologia antrenamentului este neglijată în 99% din cazuri. 
+                Trebuie să înțelegi concentrarea, intenția și capacitatea de a tolera disconfortul fizic și psihologic pentru a atinge excelența."
+            </div>
+        </div>
+
+        <div class="book-reference">
+            <div class="book-title">The Quotable Mentzer (2005)</div>
+            <div class="book-meta">Antologie postumă — Citate, eseuri și reflecții</div>
+            <p style="font-size: 0.95rem; color: var(--chalk-dim); line-height: 1.7; margin-bottom: 1rem;">
+                O culegere de gânduri, conversații și reflecții ale lui Mike Mentzer despre antrenament, viață și filozofia personală.
+            </p>
+        </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- IMPACTUL LEGACY -->
+    <section class="philosophy-section">
+        <h2 style="font-family: 'Bebas Neue', sans-serif; font-size: 2rem; margin-bottom: 1.5rem;">
+             Impactul și Moștenirea lui Mike Mentzer
+        </h2>
+
+        <p style="font-size: 1rem; color: var(--chalk-dim); line-height: 1.8; margin-bottom: 1.5rem;">
+            Deși Mike Mentzer a dispărut prematur în 2001, influența sa asupra lumii fitness-ului nu a încetat să crească, devenind mai puternică decât oricând:
+        </p>
+
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="timeline-year">1992-1997</div>
+                <div class="timeline-content">
+                    <strong>Era Dorian Yates:</strong> De șase ori Mr. Olympia consecutiv (1992-1997), Yates a recunoscut întotdeauna că succesul său se datorează aplicării principiilor Heavy Duty. 
+                    Yates a declarat: "Mike Mentzer a fost părintele acestei metode. Toți ceilalți sunt doar niște copii." Acest lucru a validat sistemul la cel mai înalt nivel.
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-year">2000-2010</div>
+                <div class="timeline-content">
+                    <strong>Revoluția digitală:</strong> Internetul a amplificat exponențial ideile lui Mentzer. Forumurile de discuții, YouTube și apoi rețelele sociale au răspândit Heavy Duty în întreaga lume. 
+                    Oamenii obișnuiți au început să raporteze rezultate remarcabile cu jumătate din timpul petrecut anterior în sală.
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-year">2010-2020</div>
+                <div class="timeline-content">
+                    <strong>Confirmarea științifică:</strong> Studiile universitare au început să confirme ceea ce Mentzer susținea de decenii: 
+                    intensitatea este mai importantă decât volumul. Cercetătorii de la Universitatea din Alabama au demonstrat că o singură serie dusă la eșec poate fi la fel de eficientă ca trei serii convenționale.
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-year">2020-prezent</div>
+                <div class="timeline-content">
+                    <strong>Integrarea în mainstream:</strong> Platforme precum HeavyDutyRO și numeroase alte aplicații implementează principiile lui Mentzer la scară largă. 
+                    Tot mai mulți oameni obișnuiți obțin transformări fizice spectaculoase antrenându-se doar 3-4 ore pe săptămână, în loc de 10-15 ore. Sistemul a fost validat irefutabil.
+                </div>
+            </div>
+        </div>
+
+        <div class="quote-block">
+            "Mike Mentzer nu a fost doar un culturist — a fost un om de știință. El a intuit adevăruri pe care academia le-a confirmat abia decenii mai târziu. 
+            Aceasta este adevărata genialitate."
+            <div class="quote-author">— John Meadows, renumit antrenor de elită</div>
+        </div>
+
+        <div class="quote-block">
+            "Fără Mike Mentzer, sistemul meu de antrenament nu ar fi existat niciodată. El a fost pionierul care a spus 'nu' dogmelor, 
+            iar toată lumea l-a considerat nebun. Astăzi, nimeni nu mai contestă adevărul spus de el."
+            <div class="quote-author">— Dorian Yates, de 6 ori Mr. Olympia</div>
+        </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- SFAT FINAL -->
+    <section class="philosophy-section" style="text-align: center; padding: 2rem; background: var(--forge); border: 1px solid var(--plate);">
+        <h3 style="font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; margin-bottom: 1rem;">
+            Aplică Filosofia lui Mike Mentzer Începând de Astăzi
+        </h3>
+        <p style="font-size: 1rem; color: var(--chalk-dim); line-height: 1.8; margin-bottom: 1.5rem;">
+            Viața lui Mike Mentzer a fost o lecție vie de curaj intelectual și consecvență. 
+            A refuzat consensul mediocru și a construit un sistem care funcționează, indiferent de cât de mult timp a trecut. 
+            <strong>Tu poți face același lucru cu propriul tău antrenament.</strong>
+        </p>
+        <a href="workout-planner.html" style="background: var(--rust); color: #fff; padding: 1rem 2rem; 
+            text-decoration: none; font-family: 'IBM Plex Mono', monospace; font-weight: 700; 
+            letter-spacing: 0.15em; text-transform: uppercase; display: inline-block; transition: background 0.2s;">
+            ➔ Construiește-ți propria Rutină Heavy Duty
+        </a>
+    </section>
+
+</main>
+
+<script>
+// Verificare autentificare
+window.addEventListener('load', async function() {
+    try {
+        const res = await fetch('api/auth.php?action=me');
+        const data = await res.json();
+
+        if (!data.success) {
+            window.location.href = 'login.html';
+            return;
+        }
+
+        const name = data.user.firstName?.trim() || data.user.email.split('@')[0];
+        document.getElementById('user-name').textContent = name;
+    } catch (_) {
+        window.location.href = 'login.html';
+    }
+});
+
+async function logout(){await fetch('api/auth.php?action=logout',{method:'POST'});window.location.href='login.html';}
+</script>
+
+</body>
+</html>

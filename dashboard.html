@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="ro">
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tablou de Bord — HeavyDutyRO</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        /* Dashboard specific styles */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--forge);
+            border: 1px solid var(--plate);
+            padding: 1.75rem;
+        }
+
+        .stat-label {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--chalk-dim);
+            margin-bottom: 1rem;
+        }
+
+        .stat-value {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 3rem;
+            line-height: 1;
+            color: var(--rust);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-unit {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--chalk-dim);
+            margin-left: 0.5rem;
+        }
+
+        .stat-change {
+            font-size: 0.85rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--plate);
+        }
+
+        .stat-change.positive { color: #3daa6e; }
+        .stat-change.negative { color: var(--rust); }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .action-btn {
+            background: var(--forge);
+            border: 1px solid var(--plate);
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .action-btn:hover {
+            border-color: var(--rust);
+            background: rgba(200, 55, 10, 0.05);
+        }
+
+        .action-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .action-label {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--chalk-dim);
+        }
+
+        .section-title {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.72rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--chess);
+            margin-top: 2.5rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--plate);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.62rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--chalk-dim);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            background: var(--steel);
+            border: 1px solid var(--plate);
+            color: var(--chalk);
+            font-family: 'Crimson Pro', serif;
+            font-size: 1rem;
+            padding: 0.75rem 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            border-color: var(--rust);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .btn-submit {
+            background: var(--rust);
+            color: #fff;
+            border: 2px solid var(--rust);
+            padding: 0.9rem 2rem;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.82rem;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .btn-submit:hover {
+            background: transparent;
+            color: var(--rust);
+        }
+
+        .next-workout {
+            background: var(--forge);
+            border: 2px solid var(--rust);
+            padding: 1.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .next-workout-title {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--rust);
+            margin-bottom: 1rem;
+        }
+
+        .workout-name {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.8rem;
+            color: var(--chalk);
+            margin-bottom: 0.5rem;
+        }
+
+        .workout-details {
+            font-size: 0.9rem;
+            color: var(--chalk-dim);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .btn-start-workout {
+            background: var(--rust);
+            color: #fff;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.75rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-start-workout:hover {
+            background: var(--rust-bright);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            background: var(--forge);
+            border: 1px solid var(--plate);
+            color: var(--chalk-dim);
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state-text {
+            margin-bottom: 1rem;
+        }
+
+        .empty-state-btn {
+            background: var(--rust);
+            color: #fff;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.75rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .empty-state-btn:hover {
+            background: var(--rust-bright);
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="topbar">
+    <a href="index.html" class="topbar-logo">Heavy<span>Duty</span>RO</a>
+    <div class="topbar-right">
+        <span class="topbar-user">Bun venit, <strong id="user-name">Utilizator</strong></span>
+        <a href="#" onclick="logout(); return false;" class="topbar-logout">Ieșire</a>
+    </div>
+</header>
+
+<nav class="sidebar">
+    <span class="sidebar-section-label">General</span>
+    <a href="dashboard.html" class="sidebar-link active">
+        Tablou de Bord
+    </a>
+    <a href="workout-planner.html" class="sidebar-link">
+       Planificator
+    </a>
+    <a href="body-fat-estimator.html" class="sidebar-link">
+       Estimare Grăsime
+    </a>
+
+    <span class="sidebar-section-label">Progres</span>
+    <a href="grafic-progres.html" class="sidebar-link">
+      Grafic Progres
+    </a>
+    <a href="jurnal-antrenament.html" class="sidebar-link">
+       Jurnal
+    </a>
+    <a href="nutritie.html" class="sidebar-link">
+       Nutriție
+    </a>
+
+    <span class="sidebar-section-label">Educație</span>
+    <a href="filosofia-mentzer.html" class="sidebar-link">
+       Filosofia Mentzer
+    </a>
+
+    <span class="sidebar-section-label">Cont</span>
+    <a href="setari.html" class="sidebar-link">
+        Setări
+    </a>
+</nav>
+
+<main class="main-content">
+
+    <header class="page-header">
+        <p class="page-tag">Tablou de Bord Personal</p>
+        <h1>Bună, <span id="greeting-name">Utilizator</span></h1>
+        <p class="page-subtitle">Sinteza progresului și antrenamentelor tale</p>
+    </header>
+
+    <!-- STATISTICI RAPIDE -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <p class="stat-label">Greutate Corporală</p>
+            <div>
+                <span class="stat-value" id="weight-display">--</span>
+                <span class="stat-unit">kg</span>
+            </div>
+            <p class="stat-change" id="weight-change">Nicio înregistrare</p>
+        </div>
+
+        <div class="stat-card">
+            <p class="stat-label">Grăsime Corporală</p>
+            <div>
+                <span class="stat-value" id="bodyfat-display">--</span>
+                <span class="stat-unit">%</span>
+            </div>
+            <p class="stat-change" id="bodyfat-change">Nicio înregistrare</p>
+        </div>
+
+        <div class="stat-card">
+            <p class="stat-label">Zile de la Ultimul Antrenament</p>
+            <div>
+                <span class="stat-value" id="days-rest">--</span>
+                <span class="stat-unit">zile</span>
+            </div>
+            <p class="stat-change" id="recovery-status">--</p>
+        </div>
+
+        <div class="stat-card">
+            <p class="stat-label">Antrenamente Lunii</p>
+            <div>
+                <span class="stat-value" id="workouts-count">0</span>
+                <span class="stat-unit">sesiuni</span>
+            </div>
+            <p class="stat-change">Progres: Doar Heavy Duty</p>
+        </div>
+    </div>
+
+    <!-- ACȚIUNI RAPIDE -->
+    <h2 class="section-title"> Acțiuni Rapide</h2>
+    <!-- Weight trend chart (last 30 estimates) -->
+    <div class="card" style="margin-bottom:1.5rem; padding:1rem;">
+        <div class="stat-label">Evoluție Greutate (ultimele 30)</div>
+        <canvas id="weight-chart" width="800" height="140" style="width:100%; height:140px; display:block;"></canvas>
+    </div>
+    <div class="quick-actions">
+        <a href="workout-planner.html" class="action-btn">
+        
+            <span class="action-label">Planifică Antrenament</span>
+        </a>
+        <a href="body-fat-estimator.html" class="action-btn">
+           
+            <span class="action-label">Estimare Grăsime</span>
+        </a>
+        <a href="jurnal-antrenament.html" class="action-btn">
+        
+            <span class="action-label">Jurnal</span>
+        </a>
+        <a href="nutritie.html" class="action-btn">
+        
+            <span class="action-label">Nutriție</span>
+        </a>
+        <a href="filosofia-mentzer.html" class="action-btn">
+           
+            <span class="action-label">Filosofia Mentzer</span>
+        </a>
+    </div>
+
+    <!-- ANTRENAMENT URMĂTOR -->
+    <h2 class="section-title">Antrenamentul Următor</h2>
+    <div id="next-workout-container">
+        <div class="empty-state">
+            <div class="empty-state-icon"></div>
+            <p class="empty-state-text"><strong>Niciun antrenament planificat</strong></p>
+            <p class="empty-state-text" style="font-size: 0.9rem; color: var(--chalk-dim); margin-bottom: 1rem;">
+                Mergi la Planificator și creează antrenamentele tale custom sau alege una din rutinele Mentzer.
+            </p>
+            <a href="workout-planner.html" class="empty-state-btn">➔ Planificator</a>
+        </div>
+    </div>
+
+    <!-- ACTUALIZARE STATISTICI -->
+    <h2 class="section-title"> Actualizare Statistici</h2>
+    <form onsubmit="updateStats(event);" class="card">
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">Greutate (kg)</label>
+                <input type="number" id="weight-input" class="form-input" min="30" max="250" step="0.1" placeholder="84.5">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Grăsime Corporală (%)</label>
+                <input type="number" id="bodyfat-input" class="form-input" min="5" max="50" step="0.1" placeholder="14.2">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Zile de Repaus</label>
+                <input type="number" id="rest-days-input" class="form-input" min="0" max="14" step="1" placeholder="0">
+            </div>
+        </div>
+        <button type="submit" class="btn-submit">Salvează</button>
+
+        <div style="margin-top:1rem;">
+            <div class="stat-label">Ultimele înregistrări (max 30)</div>
+            <table id="estimates-table" style="width:100%; border-collapse:collapse; margin-top:0.5rem;">
+                <thead>
+                    <tr style="color:var(--chalk-dim); font-family: 'IBM Plex Mono', monospace; font-size:0.78rem; text-transform:uppercase;">
+                        <th style="padding:0.5rem 0.75rem; text-align:left; border-bottom:1px solid var(--plate);">Data</th>
+                        <th style="padding:0.5rem 0.75rem; text-align:right; border-bottom:1px solid var(--plate);">Greutate (kg)</th>
+                        <th style="padding:0.5rem 0.75rem; text-align:right; border-bottom:1px solid var(--plate);">Grăsime (%)</th>
+                    </tr>
+                </thead>
+                <tbody style="color:var(--chalk); font-family: 'Crimson Pro', serif; font-size:0.95rem;">
+                </tbody>
+            </table>
+        </div>
+    </form>
+
+</main>
+
+
+<script>
+// ── Utilitar logout ──────────────────────────────────────
+async function logout() {
+    await fetch('api/auth.php?action=logout', { method: 'POST' });
+    window.location.href = 'login.html';
+}
+
+// ── Inițializare pagină ──────────────────────────────────
+(async function init() {
+    // 1. Verificare sesiune
+    let user;
+    try {
+        const res  = await fetch('api/auth.php?action=me');
+        const data = await res.json();
+        if (!data.success) { window.location.href = 'login.html'; return; }
+        user = data.user;
+    } catch (_) {
+        window.location.href = 'login.html';
+        return;
+    }
+
+    const displayName = user.firstName?.trim() || user.email.split('@')[0];
+    document.getElementById('user-name').textContent    = displayName;
+    document.getElementById('greeting-name').textContent = displayName;
+
+    // 2. Statistici utilizator
+    try {
+        const res  = await fetch('api/user.php?action=profile');
+        const data = await res.json();
+        if (data.success) {
+            const s = data.data.stats;
+            if (s.weight) {
+                document.getElementById('weight-display').textContent = s.weight.toFixed(1);
+                document.getElementById('weight-input').value          = s.weight;
+            }
+            if (s.bodyfat) {
+                document.getElementById('bodyfat-display').textContent = s.bodyfat.toFixed(1);
+                document.getElementById('bodyfat-input').value          = s.bodyfat;
+            }
+            if (s.recoveryDays !== null) {
+                document.getElementById('days-rest').textContent   = s.recoveryDays;
+                document.getElementById('rest-days-input').value   = s.recoveryDays;
+                updateRecoveryStatus(s.recoveryDays);
+            }
+        }
+    } catch (_) {}
+
+    // 2.5. Ultima estimare din body_fat_estimates
+    try {
+        const res  = await fetch('api/user.php?action=bodyfat');
+        const data = await res.json();
+        if (data.success && data.data) {
+            const bf = data.data;
+            if (bf.weight !== null && bf.weight !== undefined) {
+                document.getElementById('weight-display').textContent = parseFloat(bf.weight).toFixed(1);
+            }
+            if (bf.percentage !== null && bf.percentage !== undefined) {
+                document.getElementById('bodyfat-display').textContent = parseFloat(bf.percentage).toFixed(1);
+            }
+        }
+    } catch (_) {}
+
+    // 3. Antrenamente luna curentă
+    try {
+        const res  = await fetch('api/workouts.php');
+        const data = await res.json();
+        if (data.success) {
+            const thisMonth = new Date().getMonth();
+            const thisYear  = new Date().getFullYear();
+            const count = data.data.filter(w => {
+                const d = new Date(w.date);
+                return d.getMonth() === thisMonth && d.getFullYear() === thisYear;
+            }).length;
+            document.getElementById('workouts-count').textContent = count;
+
+            // Ultimul antrenament — calculează zile de la el
+            if (data.data.length > 0) {
+                const lastDate  = new Date(data.data[0].date);
+                const today     = new Date();
+                today.setHours(0,0,0,0);
+                lastDate.setHours(0,0,0,0);
+                const diffDays  = Math.round((today - lastDate) / 86400000);
+                document.getElementById('days-rest').textContent = diffDays;
+                updateRecoveryStatus(diffDays);
+            }
+        }
+    } catch (_) {}
+})();
+
+// ── Load and render weight chart using last 30 body fat estimates (weights) ──
+(async function loadWeightChart(){
+    try{
+        const res = await fetch('api/user.php?action=bodyfat_list');
+        const data = await res.json();
+        if (!data.success || !Array.isArray(data.data)) return;
+        const items = data.data.slice(0,30).reverse(); // oldest -> newest
+        const weights = items.map(i => i.weight).filter(w => w !== null && w !== undefined).map(w => parseFloat(w));
+
+        const canvas = document.getElementById('weight-chart');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const DPR = window.devicePixelRatio || 1;
+        const W = canvas.clientWidth || parseInt(canvas.getAttribute('width')) || 800;
+        const H = canvas.clientHeight || parseInt(canvas.getAttribute('height')) || 140;
+        canvas.width = W * DPR;
+        canvas.height = H * DPR;
+        ctx.setTransform(DPR,0,0,DPR,0,0);
+
+        // clear
+        ctx.clearRect(0,0,W,H);
+
+        if (!weights || weights.length === 0) {
+            ctx.fillStyle = 'rgba(184,176,164,0.08)';
+            ctx.fillRect(0,0,W,H);
+            ctx.fillStyle = 'rgba(184,176,164,0.85)';
+            ctx.font = '14px IBM Plex Mono, monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText('Nicio înregistrare de greutate', W/2, H/2);
+            return;
+        }
+
+        const pad = 12;
+        const min = Math.min(...weights);
+        const max = Math.max(...weights);
+        const range = Math.max(0.1, max - min);
+
+        // grid
+        ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+        ctx.lineWidth = 1;
+        for (let i=0;i<=4;i++){
+            const y = pad + (H - pad*2) * (i/4);
+            ctx.beginPath(); ctx.moveTo(pad, y); ctx.lineTo(W-pad, y); ctx.stroke();
+        }
+
+        // line
+        ctx.strokeStyle = 'rgba(200,55,10,0.95)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        weights.forEach((v, idx) => {
+            const x = pad + ( (W - pad*2) * (idx / (weights.length -1 || 1)) );
+            const y = pad + (H - pad*2) * (1 - (v - min)/range);
+            if (idx===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+        });
+        ctx.stroke();
+
+        // dots
+        ctx.fillStyle = 'rgba(200,55,10,1)';
+        weights.forEach((v, idx) => {
+            const x = pad + ( (W - pad*2) * (idx / (weights.length -1 || 1)) );
+            const y = pad + (H - pad*2) * (1 - (v - min)/range);
+            ctx.beginPath(); ctx.arc(x,y,2.5,0,Math.PI*2); ctx.fill();
+        });
+
+        // last label
+        const last = weights[weights.length-1];
+        ctx.fillStyle = 'rgba(184,176,164,0.95)';
+        ctx.font = '12px IBM Plex Mono, monospace';
+        ctx.textAlign = 'right';
+        ctx.fillText(last.toFixed(1)+' kg', W - pad, pad + 12);
+
+    }catch(e){/* ignore */}
+})();
+
+// ── Load and populate estimates table (last 30) ──
+(async function loadEstimatesTable(){
+    try{
+        const res = await fetch('api/user.php?action=bodyfat_list');
+        const data = await res.json();
+        if (!data.success || !Array.isArray(data.data)) return;
+        const items = data.data.slice(0,30); // newest first from API
+        const tbody = document.querySelector('#estimates-table tbody');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+        for (const it of items) {
+            const tr = document.createElement('tr');
+            tr.style.borderBottom = '1px solid var(--plate)';
+            const d = new Date(it.date);
+            const dateText = isNaN(d.getTime()) ? (it.date ?? '') : d.toISOString().slice(0,10);
+
+            const tdDate = document.createElement('td'); tdDate.style.padding = '0.5rem 0.75rem'; tdDate.textContent = dateText;
+            const tdW = document.createElement('td'); tdW.style.padding = '0.5rem 0.75rem'; tdW.style.textAlign = 'right'; tdW.textContent = it.weight !== null && it.weight !== undefined ? parseFloat(it.weight).toFixed(1) : '—';
+            const tdBf = document.createElement('td'); tdBf.style.padding = '0.5rem 0.75rem'; tdBf.style.textAlign = 'right'; tdBf.textContent = it.percentage !== null && it.percentage !== undefined ? parseFloat(it.percentage).toFixed(1) : '—';
+            tr.appendChild(tdDate); tr.appendChild(tdW); tr.appendChild(tdBf);
+            tbody.appendChild(tr);
+        }
+    }catch(e){/* ignore */}
+})();
+
+function updateRecoveryStatus(days) {
+    const el = document.getElementById('recovery-status');
+    if (days >= 4) {
+        el.textContent = '✓ Pregătit de antrenament';
+        el.className   = 'stat-change positive';
+    } else if (days >= 2) {
+        el.textContent = 'În recuperare optimă';
+        el.className   = 'stat-change';
+    } else {
+        el.textContent = 'Repaus prea scurt';
+        el.className   = 'stat-change negative';
+    }
+}
+
+async function updateStats(event) {
+    event.preventDefault();
+    const weight    = parseFloat(document.getElementById('weight-input').value)  || null;
+    const bodyfat   = parseFloat(document.getElementById('bodyfat-input').value) || null;
+    const restDays  = parseInt(document.getElementById('rest-days-input').value) ?? 0;
+
+    const btn = event.target.querySelector('button');
+    btn.disabled    = true;
+    btn.textContent = '💾 Salvează...';
+
+    try {
+        const res  = await fetch('api/user.php?action=stats', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({ weight, bodyfat, recoveryDays: restDays }),
+        });
+        const data = await res.json();
+
+        if (data.success) {
+            if (weight)  document.getElementById('weight-display').textContent  = weight.toFixed(1);
+            if (bodyfat) document.getElementById('bodyfat-display').textContent = bodyfat.toFixed(1);
+            document.getElementById('days-rest').textContent = restDays;
+            updateRecoveryStatus(restDays);
+            btn.textContent = '✓ Salvat!';
+            setTimeout(() => { btn.disabled = false; btn.textContent = '💾 Salvează'; }, 2000);
+        } else {
+            alert(data.message);
+            btn.disabled = false;
+            btn.textContent = '💾 Salvează';
+        }
+    } catch (_) {
+        alert('Eroare rețea.');
+        btn.disabled = false;
+        btn.textContent = '💾 Salvează';
+    }
+}
+</script>
+
+</body>
+</html>

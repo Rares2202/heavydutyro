@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estimare Grăsime Corporală — HeavyDutyRO</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        /* Stiluri specifice estimare grăsime corporală */
+        .estimator-layout {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        .bf-scale-bar {
+            height: 12px;
+            background: linear-gradient(to right,
+                #4db8a8 0%,
+                #7bc67a 15%,
+                var(--gold) 30%,
+                #e08b30 55%,
+                var(--rust) 100%
+            );
+            margin-bottom: 0.5rem;
+        }
+
+        .bf-categories {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .bf-category-row {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.82rem;
+        }
+
+        .bf-dot {
+            width: 10px;
+            height: 10px;
+            min-width: 10px;
+            border-radius: 50%;
+        }
+
+        .bf-elite { background: #4db8a8; }
+        .bf-athletic { background: #7bc67a; }
+        .bf-fitness { background: var(--gold); }
+        .bf-average { background: #e08b30; }
+        .bf-obese { background: var(--rust); }
+
+        #result-section {
+            display: none;
+            margin-top: 1.5rem;
+        }
+
+        .result-card {
+            background: var(--forge);
+            border: 1px solid var(--plate);
+            border-top: 3px solid var(--rust);
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .result-percentage {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 5rem;
+            line-height: 1;
+            letter-spacing: 0.02em;
+            color: var(--rust);
+        }
+
+        .result-category {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.8rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-top: 0.5rem;
+        }
+
+        .result-description {
+            font-size: 0.95rem;
+            color: var(--chalk-dim);
+            margin-top: 1rem;
+            line-height: 1.6;
+        }
+
+        .result-recommendation {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: var(--steel);
+            border: 1px solid var(--plate);
+        }
+
+        .result-recommendation h4 {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--rust);
+            margin-bottom: 0.5rem;
+        }
+
+        .result-recommendation p {
+            font-size: 0.85rem;
+            color: var(--chalk-dim);
+            line-height: 1.5;
+        }
+
+        .criterion-group {
+            margin-bottom: 1.75rem;
+        }
+
+        .criterion-label {
+            display: block;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.62rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--chalk-dim);
+            margin-bottom: 0.75rem;
+        }
+
+        .criterion-description {
+            font-size: 0.85rem;
+            color: var(--chalk-dim);
+            margin-bottom: 0.75rem;
+            font-style: italic;
+        }
+
+        .radio-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 0.5rem;
+        }
+
+        .radio-option {
+            position: relative;
+        }
+
+        .radio-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .radio-option label {
+            display: flex;
+            flex-direction: column;
+            padding: 0.85rem 1rem;
+            background: var(--steel);
+            border: 1px solid var(--plate);
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .radio-option label:hover {
+            background: rgba(200,55,10,0.06);
+            border-color: rgba(200,55,10,0.4);
+        }
+
+        .radio-option input[type="radio"]:checked + label {
+            border-color: var(--rust);
+            background: rgba(200,55,10,0.1);
+        }
+
+        .option-value {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.3rem;
+            line-height: 1;
+            color: var(--rust);
+            margin-bottom: 0.2rem;
+        }
+
+        .option-label {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.62rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--chalk-dim);
+        }
+
+        .option-desc {
+            font-size: 0.78rem;
+            color: rgba(184,176,164,0.7);
+            margin-top: 0.25rem;
+            line-height: 1.3;
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="topbar">
+    <a href="index.html" class="topbar-logo">Heavy<span>Duty</span>RO</a>
+    <div class="topbar-right">
+        <span class="topbar-user">Bun venit, <strong id="user-name">Utilizator</strong></span>
+        <a href="#" onclick="logout(); return false;" class="topbar-logout">Ieșire</a>
+    </div>
+</header>
+
+<nav class="sidebar">
+    <span class="sidebar-section-label">General</span>
+    <a href="dashboard.html" class="sidebar-link">
+      Tablou de Bord
+    </a>
+    <a href="workout-planner.html" class="sidebar-link">
+        Planificator
+    </a>
+    <a href="body-fat-estimator.html" class="sidebar-link active">
+        Estimare Grăsime
+    </a>
+
+    <span class="sidebar-section-label">Progres</span>
+    <a href="grafic-progres.html" class="sidebar-link">
+    Grafic Progres
+    </a>
+    <a href="jurnal-antrenament.html" class="sidebar-link">
+      Jurnal
+    </a>
+    <a href="nutritie.html" class="sidebar-link">
+        Nutriție
+    </a>
+
+    <span class="sidebar-section-label">Educație</span>
+    <a href="filosofia-mentzer.html" class="sidebar-link">
+    Filosofia Mentzer
+    </a>
+
+    <span class="sidebar-section-label">Cont</span>
+    <a href="setari.html" class="sidebar-link">
+        Setări
+    </a>
+</nav>
+
+<main class="main-content">
+
+    <header class="page-header">
+        <p class="page-tag">Metoda Vizuală · Estimare prin Oglindă</p>
+        <h1>Estimare<br>Grăsime Corporală</h1>
+        <p class="page-subtitle">Evaluează-ți compoziția corporală prin criterii vizuale</p>
+    </header>
+
+    <div class="info-bar">
+        <p>
+            <strong>Metoda Vizuală (Mirror Method):</strong> Estimarea prin observație directă a caracteristicilor fizice 
+            este o metodă practică, compatibilă cu obiectivele de definiție musculară urmărite în Heavy Duty Training. 
+            Răspunde cât mai sincer la fiecare criteriu pentru o estimare precisă.
+        </p>
+    </div>
+
+    <div class="estimator-layout">
+        <div>
+            <form id="bodyfat-form" onsubmit="handleBodyFatSubmit(event)">
+
+                <!-- CARD: Criterii Vizuale -->
+                <div class="card">
+                    <div class="card-title">
+                      Criterii Vizuale
+                    </div>
+
+                    <!-- Abdomen -->
+                    <div class="criterion-group">
+                        <label class="criterion-label">Abdomen</label>
+                        <p class="criterion-description">Observă definitatea mușchilor abdominali și nivelul grăsimii viscerate</p>
+                        <div class="radio-options">
+                            <div class="radio-option">
+                                <input type="radio" id="abdomen-0" name="abdomen" value="0" required>
+                                <label for="abdomen-0">
+                                    <span class="option-value">0</span>
+                                    <span class="option-label">Nedefinit</span>
+                                    <span class="option-desc">Fără definație</span>
+                                </label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="abdomen-1" name="abdomen" value="1">
+                                <label for="abdomen-1">
+                                    <span class="option-value">1</span>
+                                    <span class="option-label">Ușor Definit</span>
+                                    <span class="option-desc">Liniuțe ușoare</span>
+                                </label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="abdomen-2" name="abdomen" value="2">
+                                <label for="abdomen-2">
+                                    <span class="option-value">2</span>
+                                    <span class="option-label">Def. Bună</span>
+                                    <span class="option-desc">Două liniuțe</span>
+                                </label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="abdomen-3" name="abdomen" value="3">
+                                <label for="abdomen-3">
+                                    <span class="option-value">3</span>
+                                    <span class="option-label">Foarte Def.</span>
+                                    <span class="option-desc">Patru liniuțe</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Piept -->
+                    <div class="criterion-group">
+                        <label class="criterion-label">Piept</label>
+                        <p class="criterion-description">Gradul de vascularizare și definație musculară vizibilă</p>
+                        <div class="radio-options">
+                            <div class="radio-option">
+                                <input type="radio" id="chest-0" name="chest" value="0" required>
+                                <label for="chest-0">
+                                    <span class="option-value">0</span>
+                                    <span class="option-label">Nedefinit</span>
+                                    <span class="option-desc">Fără relief</span>
+                                </label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="chest-1" name="chest" value="1">
+                                <label for="chest-1">
+                                    <span class="option-value">1</span>
+                                    <span class="option-label">Ușor Viz.</span>
+                                    <span class="option-desc">Linii ușoare</span>
+                                </label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="chest-2" name="chest" value="2">
+                                <label for="chest-2">
+                                    <span class="option-value">2</span>
+                                    <span class="option-label">Vasculrizat</span>
+                                    <span class="option-desc">Relief clar</span>
+                                </label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="chest-3" name="chest" value="3">
+                                <label for="chest-3">
+                                    <span class="option-value">3</span>
+                                    <span class="option-label">Ext. Vasculrizat</span>
+                                    <span class="option-desc">Vase vizibile</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Brațe -->
+                    <div class="criterion-group">
+                        <label class="criterion-label">Brațe</label>
+                        <p class="criterion-description">Definația musculară și vascularizarea vizibilă</p>
+                        <div class="radio-options">
+                            <div class="radio-option">
+                                <input type="radio" id="arms-0" name="arms" value="0" required>
+                                <label for="arms-0">
+                                    <span class="option-value">0</span>
+                                    <span class="option-label">Rotunde</span>
+                                    <span class="option-desc">Fără definație</span>
+                                </label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="arms-1" name="arms" value="1">
+                                <label for="arms-1">
+                                    <span class="option-value">1</span>
+                                    <span class="option-label">Ușor Def.</span>
+                                    <span class="option-desc">Vârf subtil</span>
+                                </label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="arms-2" name="arms" value="2">
+                                <label for="arms-2">
+                                    <span class="option-value">2</span>
+                                    <span class="option-label">Def. Bună</span>
+                                    <span class="option-desc">Vârf clar</span>
+                                </label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="arms-3" name="arms" value="3">
+                                <label for="arms-3">
+                                    <span class="option-value">3</span>
+                                    <span class="option-label">Ext. Def.</span>
+                                    <span class="option-desc">Vârf pronunțat</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Picioare -->
+                    <div class="criterion-group">
+                        <label class="criterion-label">Picioare</label>
+                        <p class="criterion-description">Definația musculară a coapelor și vascularizarea</p>
+                        <div class="radio-options">
+                            <div class="radio-option">
+                                <input type="radio" id="legs-0" name="legs" value="0" required>
+                                <label for="legs-0">
+                                    <span class="option-value">0</span>
+                                    <span class="option-label">Netede</span>
+                                    <span class="option-desc">Fără linii</span>
+                                </label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="legs-1" name="legs" value="1">
+                                <label for="legs-1">
+                                    <span class="option-value">1</span>
+                                    <span class="option-label">Ușor Def.</span>
+                                    <span class="option-desc">Linii ușoare</span>
+                                </label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="legs-2" name="legs" value="2">
+                                <label for="legs-2">
+                                    <span class="option-value">2</span>
+                                    <span class="option-label">Def. Bună</span>
+                                    <span class="option-desc">Trasee clar</span>
+                                </label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="legs-3" name="legs" value="3">
+                                <label for="legs-3">
+                                    <span class="option-value">3</span>
+                                    <span class="option-label">Ext. Def.</span>
+                                    <span class="option-desc">Vene vizibile</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- CARD: Date Personale -->
+                <div class="card">
+                    <div class="card-title">
+                        Date Personale
+                    </div>
+
+                    <div class="field-row">
+                        <div class="field-group">
+                            <label for="gender">Gen</label>
+                            <select id="gender" name="gender" required>
+                                <option value="">-- Selectează --</option>
+                                <option value="M">Bărbat</option>
+                                <option value="F">Femeie</option>
+                            </select>
+                        </div>
+                        <div class="field-group">
+                            <label for="age">Vârstă</label>
+                            <input type="number" id="age" name="age" min="18" max="100" required>
+                        </div>
+                    </div>
+
+                    <div class="field-row">
+                        <div class="field-group">
+                            <label for="weight">Greutate (kg)</label>
+                            <input type="number" id="weight" name="weight" min="30" max="300" step="0.1" required>
+                        </div>
+                        <div class="field-group">
+                            <label for="height">Înălțime (cm)</label>
+                            <input type="number" id="height" name="height" min="130" max="230" step="0.1" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BUTON CALCULEAZĂ -->
+                <button type="submit" class="btn btn-primary">Calculează Grăsime</button>
+
+                <!-- REZULTAT -->
+                <div id="result-section">
+                    <div class="result-card">
+                        <p style="font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--chalk-dim); margin-bottom: 0.75rem;">Estimate</p>
+                        <div class="result-percentage" id="result-percentage">--</div>
+                        <div class="result-category" id="result-category">--</div>
+                        <p class="result-description" id="result-description"></p>
+                        <div class="result-recommendation" id="result-recommendation"></div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+
+        <!-- SIDEBAR: Schema Referință -->
+        <div>
+            <div class="card">
+                <div class="card-title">
+                   Schema Referință
+                </div>
+
+                <div class="bf-scale-bar"></div>
+
+                <div class="bf-scale-labels" style="font-family: 'IBM Plex Mono', monospace; font-size: 0.55rem; letter-spacing: 0.08em; color: var(--chalk-dim); display: flex; justify-content: space-between;">
+                    <span>Elite</span>
+                    <span>Athletic</span>
+                    <span>Fitness</span>
+                    <span>Average</span>
+                    <span>Obese</span>
+                </div>
+
+                <div class="bf-categories">
+                    <div class="bf-category-row">
+                        <div class="bf-dot bf-elite"></div>
+                        <span>
+                            <strong style="color: var(--chalk);">Elite</strong><br>
+                            <span class="bf-category-range" style="color: var(--chalk-dim); font-size: 0.8rem;">&lt;8%</span>
+                        </span>
+                    </div>
+                    <div class="bf-category-row">
+                        <div class="bf-dot bf-athletic"></div>
+                        <span>
+                            <strong style="color: var(--chalk);">Athletic</strong><br>
+                            <span class="bf-category-range" style="color: var(--chalk-dim); font-size: 0.8rem;">8-12%</span>
+                        </span>
+                    </div>
+                    <div class="bf-category-row">
+                        <div class="bf-dot bf-fitness"></div>
+                        <span>
+                            <strong style="color: var(--chalk);">Fitness</strong><br>
+                            <span class="bf-category-range" style="color: var(--chalk-dim); font-size: 0.8rem;">13-17%</span>
+                        </span>
+                    </div>
+                    <div class="bf-category-row">
+                        <div class="bf-dot bf-average"></div>
+                        <span>
+                            <strong style="color: var(--chalk);">Average</strong><br>
+                            <span class="bf-category-range" style="color: var(--chalk-dim); font-size: 0.8rem;">18-25%</span>
+                        </span>
+                    </div>
+                    <div class="bf-category-row">
+                        <div class="bf-dot bf-obese"></div>
+                        <span>
+                            <strong style="color: var(--chalk);">Obese</strong><br>
+                            <span class="bf-category-range" style="color: var(--chalk-dim); font-size: 0.8rem;">&gt;25%</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TIP: Heavy Duty -->
+            <div class="card" style="margin-top: 1.5rem; border-top: 2px solid var(--gold);">
+                <div class="card-title" style="color: var(--gold);">
+                   Sfat Heavy Duty
+                </div>
+                <p style="font-size: 0.85rem; color: var(--chalk-dim); line-height: 1.55;">
+                    <strong style="color: var(--chalk);">Fă evaluări regulate</strong> (săptămânal sau lunar) 
+                    pentru a urmări progresul. Heavy Duty Training este optim pentru reducerea grăsimii la niveluri 
+                    joase datorită adaptării metabolice și intensității ridicate.
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+</main>
+
+<script>
+async function logout() {
+    await fetch('api/auth.php?action=logout', { method: 'POST' });
+    window.location.href = 'login.html';
+}
+
+(async function () {
+    try {
+        const res  = await fetch('api/auth.php?action=me');
+        const data = await res.json();
+        if (!data.success) { window.location.href = 'login.html'; return; }
+        const name = data.user.firstName?.trim() || data.user.email.split('@')[0];
+        document.getElementById('user-name').textContent = name;
+    } catch (_) { window.location.href = 'login.html'; }
+})();
+
+async function handleBodyFatSubmit(event) {
+    event.preventDefault();
+
+    const abdomen = parseInt(document.querySelector('input[name="abdomen"]:checked').value);
+    const chest   = parseInt(document.querySelector('input[name="chest"]:checked').value);
+    const arms    = parseInt(document.querySelector('input[name="arms"]:checked').value);
+    const legs    = parseInt(document.querySelector('input[name="legs"]:checked').value);
+    const age     = parseInt(document.getElementById('age').value);
+    const gender  = document.getElementById('gender').value;
+    const weight  = parseFloat(document.getElementById('weight').value);
+    const height  = parseFloat(document.getElementById('height').value);
+
+    const totalScore = abdomen + chest + arms + legs;
+    const avgScore   = totalScore / 4;
+    const heightMeters = height / 100;
+    const bmi = heightMeters > 0 ? weight / (heightMeters * heightMeters) : 0;
+
+    const baseBodyFat = gender === 'M'
+        ? 1.2 * bmi + 0.23 * age - 16.2
+        : 1.2 * bmi + 0.23 * age - 5.4;
+
+    const visualMultiplier = 1 - (avgScore / 3) * 0.45;
+    const bodyfatPercent = baseBodyFat * visualMultiplier;
+    const actualBodyFat = Math.max(5, bodyfatPercent);
+
+    let category, categoryColor;
+    if      (actualBodyFat < 8)  { category = 'Elite';    categoryColor = '#4db8a8'; }
+    else if (actualBodyFat < 12) { category = 'Athletic'; categoryColor = '#7bc67a'; }
+    else if (actualBodyFat < 17) { category = 'Fitness';  categoryColor = '#d4af37'; }
+    else if (actualBodyFat < 25) { category = 'Average';  categoryColor = '#e08b30'; }
+    else                          { category = 'Obese';    categoryColor = '#c8370a'; }
+
+    let recommendation = '';
+    if (actualBodyFat < 12) {
+        recommendation = '<strong>Nutriție Ușoară:</strong> Menține surplus caloric mic. Focus pe recuperare și creștere musculară.';
+    } else if (actualBodyFat < 17) {
+        recommendation = '<strong>Fază Definiție:</strong> Deficit caloric controlat. Priorează proteinele.';
+    } else {
+        recommendation = '<strong>Ciclu Definiție:</strong> Deficit 300-500 kcal, 8-12 săptămâni.';
+    }
+
+    const displayPercentage = actualBodyFat >= 30 ? 'Peste limită' : actualBodyFat.toFixed(1) + '%';
+
+    document.getElementById('result-percentage').textContent       = displayPercentage;
+    document.getElementById('result-category').textContent         = category;
+    document.getElementById('result-category').style.color        = categoryColor;
+    document.getElementById('result-description').innerHTML = actualBodyFat >= 30
+        ? `Estimarea reală este de <strong>${actualBodyFat.toFixed(1)}%</strong>, dar este peste limită.`
+        : `La <strong>${actualBodyFat.toFixed(1)}%</strong> grăsime corporală, ești în categoria <strong>${category}</strong>. Score mediu vizual: <strong>${avgScore.toFixed(1)}</strong>/3`;
+    document.getElementById('result-recommendation').innerHTML     = `<h4>Recomandare</h4><p>${recommendation}</p>`;
+    document.getElementById('result-section').style.display        = 'block';
+
+    // Salvează în baza de date
+    try {
+        await fetch('api/user.php?action=bodyfat', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({
+                percentage: parseFloat(actualBodyFat.toFixed(1)),
+                category,
+                gender,
+                age: age || null,
+                weight: weight || null,
+                height: height || null,
+            }),
+        });
+    } catch (_) {}
+}
+</script>
+
+</body>
+</html>
